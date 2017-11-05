@@ -57,7 +57,7 @@ public class GameBoard extends JPanel implements ActionListener {
     long curTime;
     long defTime;
     long pauseTime;
-    
+
     PlayerMode playMode;
     Player player;
 
@@ -65,7 +65,7 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	this.playMode = playMode;
 	this.player = player;
-	
+
 	setLayout(null);
 	setBoundProperty(x, y, width, height);
 
@@ -85,7 +85,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	timer.start();
 
 	board = new Tetrominoes[BoardWidth * BoardHeight];
-	
+
 	clearBoard();
 
     }
@@ -111,6 +111,7 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	if (isFallingFinished) {
 	    isFallingFinished = false;
+
 	    newPiece();
 	} else {
 	    oneLineDown();
@@ -318,13 +319,38 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	int line = 180;
 
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ◀ ▶] 블럭이동", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "[SPACE BAR] 블럭 한번에 내리기", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▼] 블럭 한번에 내리기", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시 시작", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "[SHIFT] 블럭 바꾸기", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
+	if (playMode.equals(PlayerMode.Single) || playMode.equals(PlayerMode.AI)) {
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▲] 블럭 회전", line += metr.getHeight());
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ◀ ▶] 블럭 이동", line += metr.getHeight());
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▼] 블럭 내리기", line += metr.getHeight());
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[SPACE BAR] 블럭 한번에 내리기", line += metr.getHeight());
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[SHIFT] 블럭 저장", line += metr.getHeight());
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시 시작", line += metr.getHeight());
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
+	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
+	} else if (playMode.equals(PlayerMode.Duo)) {
+
+	    if (player.equals(Player.Player1)) {
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[I] 블럭 회전", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[J][K] 블럭 이동", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[K] 블럭 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[SPACE BAR] 블럭 한번에 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[SHIFT] 블럭 저장", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시 시작", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
+	    } else {
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[8] 블럭 회전", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[4][6] 블럭 이동", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[5] 블럭 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▼] 블럭 한번에 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▲] 블럭 저장", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시 시작", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[BACK SPACE ←] 고스트 블럭 모드", line += metr.getHeight());
+	    }
+
+	}
 
     }
 
@@ -413,7 +439,7 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     public boolean tryMove(Shape newPiece, int newX, int newY) {
-	
+
 	for (int i = 0; i < 4; ++i) {
 	    int x = newX + newPiece.x(i);
 	    int y = newY - newPiece.y(i);
