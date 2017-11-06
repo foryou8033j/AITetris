@@ -7,7 +7,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -108,14 +110,34 @@ public class InfoBoard extends JPanel {
 	drawStringCenterOfPanel(g, Color.BLACK, 14, "Penalty", getSize().height/2 +getSize().height/6);
 	drawStringCenterOfPanel(g, Color.RED, 14, String.valueOf(ghostUsed), getSize().height/2 +getSize().height/6 + metr.getHeight());
 	
-	drawStringCenterOfPanel(g, Color.BLACK, 14, "GHOST", getSize().height/2 +getSize().height/3);
-	drawStringCenterOfPanel(g, Color.BLACK, 14, "MODE", getSize().height/2 +getSize().height/3 + metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLACK, 14, "GHOST", getSize().height/2 +getSize().height/3 - 40);
+	drawStringCenterOfPanel(g, Color.BLACK, 14, "MODE", getSize().height/2 +getSize().height/3 -50 + metr.getHeight());
 	
 	if (isGhost)
-	    drawStringCenterOfPanel(g, Color.RED, 12, "ON", getSize().height/2 + getSize().height/3 + metr.getHeight() * 2);
+	    drawStringCenterOfPanel(g, Color.RED, 12, "ON", getSize().height/2 + getSize().height/3 + metr.getHeight() * 2 - 50);
 	else
-	    drawStringCenterOfPanel(g, Color.BLUE, 12, "OFF", getSize().height/2 + getSize().height/3 + metr.getHeight()*2);
-	    
+	    drawStringCenterOfPanel(g, Color.BLUE, 12, "OFF", getSize().height/2 + getSize().height/3 + metr.getHeight()*2 - 50);
+	
+	DateFormat format = new SimpleDateFormat("mm:ss");
+	Date time = new Date(leftTime);
+	
+	drawStringCenterOfPanel(g, Color.BLACK, 12, "Left Time" , getSize().height/2 + getSize().height/3 + metr.getHeight()*2);
+	
+	//2분 이하로 내려가면 붉게 표시, 1분 이하면 1초마다 깜빡인다.
+	if(time.getMinutes() < 2) {
+	    if(time.getMinutes() < 1 && time.getSeconds() < 20) {
+		if(time.getSeconds() % 2 == 0)
+		    drawStringCenterOfPanel(g, Color.BLUE, 12, format.format(time) , getSize().height/2 + getSize().height/3 + metr.getHeight()*2 + 20);
+		else
+		    drawStringCenterOfPanel(g, Color.RED, 12, format.format(time) , getSize().height/2 + getSize().height/3 + metr.getHeight()*2 + 20);
+	    }else
+		drawStringCenterOfPanel(g, Color.RED, 12, format.format(time) , getSize().height/2 + getSize().height/3 + metr.getHeight()*2 + 20);
+	}
+	else
+	    drawStringCenterOfPanel(g, Color.BLUE, 12, format.format(time) , getSize().height/2 + getSize().height/3 + metr.getHeight()*2 + 20);
+	
+	
+	
     }
     
     /**

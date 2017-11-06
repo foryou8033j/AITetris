@@ -117,6 +117,8 @@ public class KeyHandler extends KeyAdapter {
 
     public void keyPressed(KeyEvent e) {
 
+	System.out.println("GameBoard : " + e.getKeyCode());
+	
 	if (playMode.equals(PlayerMode.Single)) {
 	    switch (e.getKeyCode()) {
 

@@ -141,7 +141,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	    return;
 
 	curTime = System.currentTimeMillis();
-	defTime = System.currentTimeMillis() + 600000;
+	defTime = System.currentTimeMillis() + 50000;
 
 	isStarted = true;
 	isOver = false;
