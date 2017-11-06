@@ -26,57 +26,50 @@ import AITetris.View.Board.Tetrimino.Tetrominoes;
  */
 public class InfoBoard extends JPanel {
 
-    final int BoardWidth = 5;
-    final int BoardHeight = 30;
+    //보드 테트리미노 단일 크기
+    private final int BoardWidth = 5;
+    private final int BoardHeight = 30;
 
-    public Shape nextPiece;
-    public Shape tempPiece;
+    //다음 블럭이 그려질 좌표
+    private int nextPieceX = 0;
+    private int nextPieceY = 0;
 
-    int nextPieceX = 0;
-    int nextPieceY = 0;
+    //임시 블럭이 그려질 좌표
+    private int tempPieceX = 0;
+    private int tempPieceY = 0;
 
-    int tempPieceX = 0;
-    int tempPieceY = 0;
+    
 
+    public long leftTime;
+    
+    private GameBoard gameBoard;
+
+    public InfoBoard(GameBoard gameBoard) {
+	
+	this.gameBoard = gameBoard;
+
+	leftTime = 0;
+
+	nextPieceX = BoardWidth / 2;
+	nextPieceY = BoardHeight - 1 + gameBoard.nextPiece.minY() - 4;
+	
+	tempPieceX = BoardWidth / 2;
+	tempPieceY = BoardHeight - 1 + gameBoard.tempPiece.minY() - 10;
+
+	setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
+
+	//newPiece();
+    }
+    
+    //블럭 가로 크기 반환
     int squareWidth() {
 	return (int) getSize().getWidth() / BoardWidth;
     }
 
+    
+    //블럭 세로 크기 반환
     int squareHeight() {
 	return (int) getSize().getHeight() / BoardHeight;
-    }
-
-    public int point = 0;
-    public int ghostUsed = 0;
-    public boolean isGhost = false;
-
-    public long leftTime;
-
-    public InfoBoard(GameBoard gameBoard) {
-
-	leftTime = 0;
-	nextPiece = new Shape();
-	tempPiece = new Shape();
-
-	nextPieceX = BoardWidth / 2;
-	nextPieceY = BoardHeight - 1 + nextPiece.minY() - 3;
-
-	tempPieceX = BoardWidth / 2;
-	tempPieceY = BoardHeight - 1 + nextPiece.minY() - 10;
-
-	// setBorder(new BevelBorder(BevelBorder.RAISED));
-	setBorder(BorderFactory.createLineBorder(Color.black));
-
-	newPiece();
-    }
-
-    public void cleanPieces() {
-	point = 0;
-	ghostUsed = 0;
-
-	nextPiece.setShape(Tetrominoes.NoShape);
-	tempPiece.setShape(Tetrominoes.NoShape);
-	newPiece();
     }
     
     @Override
@@ -105,15 +98,15 @@ public class InfoBoard extends JPanel {
 	
 	
 	drawStringCenterOfPanel(g, Color.BLACK, 14, "Points", getSize().height/2 + metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 14, String.valueOf(point), getSize().height/2 + metr.getHeight()*2);
+	drawStringCenterOfPanel(g, Color.BLACK, 14, String.valueOf(gameBoard.point), getSize().height/2 + metr.getHeight()*2);
 
 	drawStringCenterOfPanel(g, Color.BLACK, 14, "Penalty", getSize().height/2 +getSize().height/6);
-	drawStringCenterOfPanel(g, Color.RED, 14, String.valueOf(ghostUsed), getSize().height/2 +getSize().height/6 + metr.getHeight());
+	drawStringCenterOfPanel(g, Color.RED, 14, String.valueOf(gameBoard.ghostUsed), getSize().height/2 +getSize().height/6 + metr.getHeight());
 	
 	drawStringCenterOfPanel(g, Color.BLACK, 14, "GHOST", getSize().height/2 +getSize().height/3 - 40);
 	drawStringCenterOfPanel(g, Color.BLACK, 14, "MODE", getSize().height/2 +getSize().height/3 -50 + metr.getHeight());
 	
-	if (isGhost)
+	if (gameBoard.isGhost)
 	    drawStringCenterOfPanel(g, Color.RED, 12, "ON", getSize().height/2 + getSize().height/3 + metr.getHeight() * 2 - 50);
 	else
 	    drawStringCenterOfPanel(g, Color.BLUE, 12, "OFF", getSize().height/2 + getSize().height/3 + metr.getHeight()*2 - 50);
@@ -151,30 +144,25 @@ public class InfoBoard extends JPanel {
 	int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
 
 	//다음 피스 그리기
-	if (nextPiece.getShape() != Tetrominoes.NoShape) {
+	if (gameBoard.nextPiece.getShape() != Tetrominoes.NoShape) {
 	    for (int i = 0; i < 4; ++i) {
-		int x = nextPieceX + nextPiece.x(i);
-		int y = nextPieceY - nextPiece.y(i);
-		drawSquare(g, x * squareWidth(), boardTop + (BoardHeight - y - 1) * squareHeight(),nextPiece.getShape());
+		int x = nextPieceX + gameBoard.nextPiece.x(i);
+		int y = nextPieceY + gameBoard.nextPiece.y(i);
+		drawSquare(g, x * squareWidth(), boardTop + (BoardHeight - y - 1) * squareHeight(), gameBoard.nextPiece.getShape());
 	    }
 	}
 	
-	
 	//임시 피스 그리기
-	if (tempPiece.getShape() != Tetrominoes.NoShape) {
+	if (gameBoard.tempPiece.getShape() != Tetrominoes.NoShape) {
 	    for (int i = 0; i < 4; ++i) {
-		int x = tempPieceX + tempPiece.x(i);
-		int y = tempPieceY - tempPiece.y(i);
-		drawSquare(g, x * squareWidth(), boardTop + (BoardHeight - y - 1) * squareHeight(),tempPiece.getShape());
+		int x = tempPieceX + gameBoard.tempPiece.x(i);
+		int y = tempPieceY - gameBoard.tempPiece.y(i);
+		drawSquare(g, x * squareWidth(), boardTop + (BoardHeight - y - 1) * squareHeight(), gameBoard.tempPiece.getShape());
 	    }
 	} else {
 	    drawStringCenterOfPanel(g, Color.BLACK, 12, "x", getSize().height/3);
 	}
 	
-    }
-
-    private void newPiece() {
-	nextPiece.setRandomShape();
     }
 
     /**

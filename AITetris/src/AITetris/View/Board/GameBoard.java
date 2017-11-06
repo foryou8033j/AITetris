@@ -27,32 +27,37 @@ import AITetris.View.Board.Tetrimino.Tetrominoes;
  **/
 public class GameBoard extends JPanel implements ActionListener {
 
-    int width;
-    int heigh;
+    public final int BoardWidth = 12;
+    public final int BoardHeight = 24;
 
-    final int BoardWidth = 12;
-    final int BoardHeight = 24;
+    private Timer timer;
 
-    Timer timer;
-    boolean isFallingFinished = false;
+    public boolean isFallingFinished = false;
     boolean isStarted = false;
     boolean isPaused = false;
-    public boolean isGhost = false;
+    boolean isGhost = false;
     boolean isOver = false;
-    int numLinesRemoved = 0;
-    int numTetrominoDropCount = 0;
-    int numCountGhostUse = 0;
-    int curX = 0;
-    int curY = 0;
-    int ghostCurX = 0;
-    int ghostCurY = 0;
 
-    Shape curPiece;
+    private int numLinesRemoved = 0;
+    private int numTetrominoDropCount = 0;
+    private int numCountGhostUse = 0;
+
+    public int curX = 0;
+    public int curY = 0;
+    public int ghostCurX = 0;
+    public int ghostCurY = 0;
+
+    public int point = 0;
+    public int ghostUsed = 0;
+
+    public Shape curPiece;
+    Shape nextPiece;
     Shape ghostPiece;
+    Shape tempPiece;
 
-    Tetrominoes[] board;
+    private Tetrominoes[] board;
 
-    InfoBoard infoBoard;
+    private InfoBoard infoBoard;
 
     long curTime;
     long defTime;
@@ -67,96 +72,100 @@ public class GameBoard extends JPanel implements ActionListener {
 	this.player = player;
 
 	setLayout(null);
-	setBoundProperty(x, y, width, height);
-
-	infoBoard = new InfoBoard(this);
-	add(infoBoard);
-
-	infoBoard.setBounds(width - 100, 0, 100, height);
-
-	setBorder(BorderFactory.createLineBorder(Color.black));
-
+	setBounds(x, y, width, height);
+	setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
 	setFocusable(true);
-
-	curPiece = new Shape();
-	ghostPiece = new Shape();
-
-	timer = new Timer(400, this);
-	timer.start();
 
 	board = new Tetrominoes[BoardWidth * BoardHeight];
 
-	clearBoard();
+	curPiece = new Shape();
+	nextPiece = new Shape();
+	ghostPiece = new Shape();
+	tempPiece = new Shape();
 
+	infoBoard = new InfoBoard(this);
+	infoBoard.setBounds(width - 100, 0, 100, height);
+	add(infoBoard);
+
+	timer = new Timer(400, this);
+	// timer.start();
+
+	clearBoard();
     }
 
     public void actionPerformed(ActionEvent e) {
 
 	curTime = System.currentTimeMillis();
 	infoBoard.leftTime = (defTime - curTime);
+
 	if ((float) (defTime - curTime) / 1000 < 0) {
 	    curPiece.setShape(Tetrominoes.NoShape);
-	    timer.stop();
 	    isStarted = false;
 	    isOver = true;
-	    repaint();
+	    timer.stop();
 	}
 
+	// 난이도 조절부
 	if ((float) (defTime - curTime) / 1000 < 300)
 	    timer.setDelay(300);
 	if ((float) (defTime - curTime) / 1000 < 180)
 	    timer.setDelay(200);
 
-	infoBoard.repaint();
-
 	if (isFallingFinished) {
 	    isFallingFinished = false;
-
 	    newPiece();
 	} else {
 	    oneLineDown();
 	}
+
+	repaint();
+	infoBoard.repaint();
     }
 
-    public void setBoundProperty(int x, int y, int width, int height) {
-	this.width = width;
-	this.heigh = height;
-	super.setBounds(x, y, width, height);
-    }
-
+    // 블럭의 단일 가로 크기 반환
     int squareWidth() {
 	return (int) (getSize().getWidth() - 100) / BoardWidth;
     }
 
+    // 블럭의 단일 세로 크기 반환
     int squareHeight() {
 	return (int) getSize().getHeight() / BoardHeight;
     }
 
-    Tetrominoes shapeAt(int x, int y) {
+    private Tetrominoes shapeAt(int x, int y) {
 	return board[(y * BoardWidth) + x];
     }
 
     public void start() {
-	if (isPaused)
+	if (isPaused || isStarted)
 	    return;
 
-	curTime = System.currentTimeMillis();
-	defTime = System.currentTimeMillis() + 50000;
+	else {
 
-	isStarted = true;
-	isOver = false;
-	isFallingFinished = false;
-	isGhost = false;
-	numCountGhostUse = 0;
-	numLinesRemoved = 0;
-	numTetrominoDropCount = 0;
-	infoBoard.point = numLinesRemoved;
-	clearBoard();
-	infoBoard.cleanPieces();
+	    curTime = System.currentTimeMillis();
+	    defTime = System.currentTimeMillis() + 600000;
 
-	newPiece();
-	timer.setDelay(400);
-	timer.start();
+	    isStarted = true;
+	    isOver = false;
+	    isFallingFinished = false;
+	    isGhost = false;
+	    numCountGhostUse = 0;
+	    numLinesRemoved = 0;
+	    numTetrominoDropCount = 0;
+	    point = 0;
+	    ghostUsed = 0;
+
+	    clearBoard();
+
+	    tempPiece.setShape(Tetrominoes.NoShape);
+	    nextPiece.setRandomShape();
+
+	    timer.setDelay(400);
+	    timer.start();
+
+	    newPiece();
+	}
+
     }
 
     public void pause() {
@@ -164,6 +173,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	    return;
 
 	isPaused = !isPaused;
+
 	if (isPaused) {
 	    pauseTime = System.currentTimeMillis();
 	    timer.stop();
@@ -171,19 +181,23 @@ public class GameBoard extends JPanel implements ActionListener {
 	    timer.start();
 	    defTime += (System.currentTimeMillis() - pauseTime);
 	}
+
 	repaint();
     }
 
     public void exchangePiece() {
 
-	if (infoBoard.tempPiece.getShape() == Tetrominoes.NoShape) {
-	    infoBoard.tempPiece.setShape(curPiece.getShape());
+	if (!isStarted || isPaused)
+	    return;
+
+	if (tempPiece.getShape() == Tetrominoes.NoShape) {
+	    tempPiece.setShape(curPiece.getShape());
 	    newPiece();
 	} else {
-	    if (tryExchange(infoBoard.tempPiece)) {
+	    if (tryExchange(tempPiece)) {
 		Shape tempShape = new Shape();
-		tempShape.setShape(infoBoard.tempPiece.getShape());
-		infoBoard.tempPiece.setShape(curPiece.getShape());
+		tempShape.setShape(tempPiece.getShape());
+		tempPiece.setShape(curPiece.getShape());
 		curPiece.setShape(tempShape.getShape());
 	    }
 
@@ -194,6 +208,7 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     private boolean tryExchange(Shape newPiece) {
+
 	for (int i = 0; i < 4; ++i) {
 	    int x = curX + newPiece.x(i);
 	    int y = curY + newPiece.y(i);
@@ -218,12 +233,14 @@ public class GameBoard extends JPanel implements ActionListener {
 	start();
     }
 
+    @Override
     public void paint(Graphics g) {
 	super.paint(g);
 
 	Dimension size = getSize();
 	int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
 
+	// 보드에 저장된 블럭을 그린다
 	for (int i = 0; i < BoardHeight; ++i) {
 	    for (int j = 0; j < BoardWidth; ++j) {
 		Tetrominoes shape = shapeAt(j, BoardHeight - i - 1);
@@ -232,12 +249,10 @@ public class GameBoard extends JPanel implements ActionListener {
 	    }
 	}
 
-	if (isGhost) {
-	    infoBoard.isGhost = true;
+	if (isGhost)
 	    drawGhostPiece(g);
-	} else
-	    infoBoard.isGhost = false;
 
+	// 현재 블럭을 그린다
 	if (curPiece.getShape() != Tetrominoes.NoShape) {
 	    for (int i = 0; i < 4; ++i) {
 		int x = curX + curPiece.x(i);
@@ -247,17 +262,24 @@ public class GameBoard extends JPanel implements ActionListener {
 	    }
 	}
 
+	// UI Draw 관련
+
+	if (!isStarted && !isOver)
+	    drawHelpScreen(g);
+
 	if (isOver)
 	    drawGameOverScreen(g);
 
-	if (isPaused)
+	if (isPaused && isStarted)
 	    drawPauseScreen(g);
 
+	// 3개의 Tetromino 가 Drop 하기 전에는 HelpScreen 을 그려준다
 	if (numTetrominoDropCount < 3 && !isPaused && !isOver)
 	    drawHelpScreen(g);
 
+	// Limit Line Draw
 	g.setColor(Color.RED);
-	g.drawLine(0, BoardHeight, (int) getSize().getWidth(), BoardHeight);
+	g.drawLine(0, BoardHeight, (int) getSize().getWidth() - 100, BoardHeight);
 
 	infoBoard.repaint();
 
@@ -280,23 +302,23 @@ public class GameBoard extends JPanel implements ActionListener {
 	else
 	    drawStringCenterOfPanel(g, Color.RED, 24, "GAME OVER", line);
 
-	drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'R' To Restart", line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'ENTER' To Restart", line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'Q' Back To Title", line += metr.getHeight());
 
 	line += 80;
 
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Points", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, String.valueOf(infoBoard.point), line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLACK, 16, String.valueOf(point), line += metr.getHeight());
 
 	line += 20;
 
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Penalty", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.RED, 16, String.valueOf(infoBoard.ghostUsed), line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.RED, 16, String.valueOf(ghostUsed), line += metr.getHeight());
 
 	line += 20;
 
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Point Result", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLUE, 16, String.valueOf(infoBoard.point - infoBoard.ghostUsed),
-		line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLUE, 16, String.valueOf(point - ghostUsed), line += metr.getHeight());
 
 	quit();
 
@@ -317,37 +339,60 @@ public class GameBoard extends JPanel implements ActionListener {
 	Font small = new Font("Helvetica", Font.BOLD, 20);
 	FontMetrics metr = getFontMetrics(small);
 
-	int line = 180;
+	int line = 260;
+	Color color = Color.GRAY;
+
+	if (!isStarted) {
+
+	    if (player.equals(player.Neo)) {
+		drawStringCenterOfPanel(g, Color.RED, 24, "WAIT FOR", 100 + metr.getHeight());
+		drawStringCenterOfPanel(g, Color.RED, 24, "START ORDER", 100 + metr.getHeight() * 2);
+	    } else {
+		drawStringCenterOfPanel(g, Color.RED, 24, "WAIT START", 100 + metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'ENTER' To Start", 100 + metr.getHeight() * 2);
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'Q' Back To Title", 100 + metr.getHeight() * 3);
+	    }
+
+	    color = Color.BLACK;
+	}
 
 	if (playMode.equals(PlayerMode.Single) || playMode.equals(PlayerMode.AI)) {
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▲] 블럭 회전", line += metr.getHeight());
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ◀ ▶] 블럭 이동", line += metr.getHeight());
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▼] 블럭 내리기", line += metr.getHeight());
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[SPACE BAR] 블럭 한번에 내리기", line += metr.getHeight());
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[SHIFT] 블럭 저장", line += metr.getHeight());
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시 시작", line += metr.getHeight());
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
-	    drawStringCenterOfPanel(g, Color.BLACK, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
+
+	    if (player.equals(Player.Player1)) {
+		drawStringCenterOfPanel(g, color, 16, "[방향키 ▲] 블럭 회전", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[방향키 ◀ ▶] 블럭 이동", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[방향키 ▼] 블럭 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[SPACE BAR] 블럭 한번에 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[SHIFT] 블럭 저장", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[ENTER] 다시 시작", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
+	    } else {
+
+		drawStringCenterOfPanel(g, color, 16, "AI. NEO 가 플레이합니다", line += metr.getHeight());
+
+	    }
+
 	} else if (playMode.equals(PlayerMode.Duo)) {
 
 	    if (player.equals(Player.Player1)) {
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[I] 블럭 회전", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[J][K] 블럭 이동", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[K] 블럭 내리기", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[SPACE BAR] 블럭 한번에 내리기", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[SHIFT] 블럭 저장", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시 시작", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[I] 블럭 회전", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[J][K] 블럭 이동", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[K] 블럭 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[SPACE BAR] 블럭 한번에 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[SHIFT] 블럭 저장", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[ENTER] 다시 시작", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
 	    } else {
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[8] 블럭 회전", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[4][6] 블럭 이동", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[5] 블럭 내리기", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▼] 블럭 한번에 내리기", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[방향키 ▲] 블럭 저장", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시 시작", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "[BACK SPACE ←] 고스트 블럭 모드", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[8] 블럭 회전", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[4][6] 블럭 이동", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[5] 블럭 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[방향키 ▼] 블럭 한번에 내리기", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[방향키 ▲] 블럭 저장", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[ENTER] 다시 시작", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[ESC][P] 일시 중지", line += metr.getHeight());
+		drawStringCenterOfPanel(g, color, 16, "[BACK SPACE ←] 고스트 블럭 모드", line += metr.getHeight());
 	    }
 
 	}
@@ -368,26 +413,30 @@ public class GameBoard extends JPanel implements ActionListener {
 	drawStringCenterOfPanel(g, Color.RED, 24, "PAUSE", line += metr.getHeight());
 
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'ESC' or 'P' To Restart", line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'Q' Back To Title", line += metr.getHeight());
 
 	line += 80;
 
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Points", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLACK, 16, String.valueOf(infoBoard.point), line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLACK, 16, String.valueOf(point), line += metr.getHeight());
 
 	line += 20;
 
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Penalty", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.RED, 16, String.valueOf(infoBoard.ghostUsed), line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.RED, 16, String.valueOf(ghostUsed), line += metr.getHeight());
 
 	line += 20;
 
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Point Result", line += metr.getHeight());
-	drawStringCenterOfPanel(g, Color.BLUE, 16, String.valueOf(infoBoard.point - infoBoard.ghostUsed),
-		line += metr.getHeight());
+	drawStringCenterOfPanel(g, Color.BLUE, 16, String.valueOf(point - ghostUsed), line += metr.getHeight());
 
     }
 
     public void dropDown() {
+
+	if (!isStarted || isPaused)
+	    return;
+
 	int newY = curY;
 	while (newY > 0) {
 	    if (!tryMove(curPiece, curX, newY - 1))
@@ -408,6 +457,7 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     private void pieceDropped() {
+
 	for (int i = 0; i < 4; ++i) {
 	    int x = curX + curPiece.x(i);
 	    int y = curY - curPiece.y(i);
@@ -422,9 +472,8 @@ public class GameBoard extends JPanel implements ActionListener {
     private void newPiece() {
 	numTetrominoDropCount++;
 
-	curPiece.setShape(infoBoard.nextPiece.getShape());
-	infoBoard.nextPiece.setRandomShape();
-	infoBoard.repaint();
+	curPiece.setShape(nextPiece.getShape());
+	nextPiece.setRandomShape();
 
 	curX = BoardWidth / 2 + 1;
 	curY = BoardHeight - 1 + curPiece.minY();
@@ -439,6 +488,9 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     public boolean tryMove(Shape newPiece, int newX, int newY) {
+
+	if (!isStarted || isPaused)
+	    return false;
 
 	for (int i = 0; i < 4; ++i) {
 	    int x = newX + newPiece.x(i);
@@ -538,7 +590,7 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	if (numFullLines > 0) {
 	    numLinesRemoved += numFullLines;
-	    infoBoard.point = getPointAdd(numFullLines);
+	    point = getPointAdd(numFullLines);
 	    isFallingFinished = true;
 	    curPiece.setShape(Tetrominoes.NoShape);
 	    repaint();
@@ -546,19 +598,15 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     private int getPointAdd(int numFullLines) {
-	int sum = infoBoard.point;
+	int sum = point;
 
 	for (int i = 0; i < numFullLines; i++) {
 	    if (isGhost)
-		infoBoard.ghostUsed += numFullLines * 50;
+		ghostUsed += numFullLines * 50;
 	    sum += numFullLines * 100;
 	}
 
 	return sum;
-    }
-
-    private int getPoint() {
-	return infoBoard.point - infoBoard.ghostUsed;
     }
 
     private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
@@ -568,6 +616,9 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	Color color = colors[shape.ordinal()];
 
+	if(isOver)
+	    color = Color.LIGHT_GRAY;
+	
 	g.setColor(color);
 	g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
 
@@ -604,6 +655,10 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	g.drawString(str, (int) (getSize().getWidth() - 100) / 2 - metr.stringWidth(str) / 2, height);
 
+    }
+    
+    public Tetrominoes[] getBoard() {
+	return board;
     }
 
 }

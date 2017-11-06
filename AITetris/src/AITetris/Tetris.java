@@ -1,11 +1,9 @@
 package AITetris;
 
-import java.awt.Color;
-
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import AITetris.Model.Neo;
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 import AITetris.View.Board.GameBoard;
@@ -33,6 +31,9 @@ public class Tetris extends JFrame {
 	setBounds(20, 20, 1330, 680);
 	setLocationByPlatform(true);
 	setFocusable(false);
+	setResizable(false);
+	
+	
 
 	getContentPane().setLayout(null);
 
@@ -40,15 +41,25 @@ public class Tetris extends JFrame {
 
 	show();
     }
+    
+    private void clearContentPanel() {
+	getContentPane().removeAll();
+	getContentPane().repaint();
+    }
 
     public void initTitle() {
-
+	
+	clearContentPanel();
+	
 	title = new Title(this);
+	
 	title.setBounds(20, 20, 1270, 600);
 
 	getContentPane().add(title);
 
 	title.requestFocus();
+	
+	getContentPane().repaint();
 
     }
 
@@ -60,7 +71,7 @@ public class Tetris extends JFrame {
 
 	GameBoard board = new GameBoard(playMode, Player.Player1, (int) (getSize().getWidth()/2) - (B_WIDTH_SIZE/2), 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
-	KeyHandler keyHandler = new KeyHandler(playMode, board, null);
+	KeyHandler keyHandler = new KeyHandler(this, playMode, board, null);
 
 	board.addKeyListener(keyHandler);
 
@@ -75,10 +86,10 @@ public class Tetris extends JFrame {
 
 	PlayerMode playMode = PlayerMode.Duo;
 
-	GameBoard board = new GameBoard(playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
-	GameBoard board2 = new GameBoard(playMode, Player.Player2, 20 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+	GameBoard board = new GameBoard(playMode, Player.Player1, 20 + B_WIDTH_SIZE/2, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+	GameBoard board2 = new GameBoard(playMode, Player.Player2, 20 + B_WIDTH_SIZE/2 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
-	KeyHandler keyHandler = new KeyHandler(playMode, board, board2);
+	KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
 
 	board.addKeyListener(keyHandler);
 	board2.addKeyListener(keyHandler);
@@ -93,6 +104,27 @@ public class Tetris extends JFrame {
     public void initNeo() {
 
 	title.clearPanel();
+
+	PlayerMode playMode = PlayerMode.AI;
+
+	GameBoard board = new GameBoard(playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+	GameBoard board2 = new GameBoard(playMode, Player.Neo, 20 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+	
+	KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
+
+	board.addKeyListener(keyHandler);
+	board2.addKeyListener(keyHandler);
+
+	getContentPane().add(board);
+	getContentPane().add(board2);
+
+	board.requestFocus();
+	board2.requestFocus();
+	
+	Neo neo = new Neo(board2);
+	neo.setBounds(20*3 + B_WIDTH_SIZE*2, 20, (int) getSize().getWidth() - B_WIDTH_SIZE*2 - 90, B_HEIGHT_SIZE);
+	getContentPane().add(neo);
+	
 
     }
 

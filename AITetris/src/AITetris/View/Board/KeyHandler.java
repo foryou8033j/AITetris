@@ -3,35 +3,47 @@ package AITetris.View.Board;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import AITetris.Tetris;
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 
 public class KeyHandler extends KeyAdapter {
 
+    private Tetris tetris;
 
     private GameBoard board;
     private GameBoard board2;
 
     private PlayerMode playMode;
 
-    public KeyHandler(PlayerMode playMode, GameBoard gameBoard, GameBoard gameBoard2) {
+    public KeyHandler(Tetris tetris, PlayerMode playMode, GameBoard gameBoard, GameBoard gameBoard2) {
+	
+	this.tetris = tetris;
+	
 	this.board = gameBoard;
 	this.board2 = gameBoard2;
 
 	this.playMode = playMode;
     }
 
+    private void showTitlePanel(Player player) {
+	
+	if(!board.isStarted || board.isPaused || board.isOver) {
+	    tetris.initTitle();
+	}
+    }
+    
     private void reset(Player player) {
 	if (player.equals(Player.Player1))
 	    board.reset();
-	if (player.equals(Player.Player2))
+	if (player.equals(Player.Player2) || player.equals(Player.Neo))
 	    board2.reset();
     }
 
     private void pause(Player player) {
 	if (player.equals(Player.Player1))
 	    board.pause();
-	if (player.equals(Player.Player2))
+	if (player.equals(Player.Player2) || player.equals(Player.Neo))
 	    board2.pause();
     }
 
@@ -52,63 +64,84 @@ public class KeyHandler extends KeyAdapter {
 
     private void moveLeft(Player player) {
 
-	if (player.equals(Player.Player1))
+	if (player.equals(Player.Player1)) {
 	    board.tryMove(board.curPiece, board.curX - 1, board.curY);
-	if (player.equals(Player.Player2))
+	}
+	    
+	if (player.equals(Player.Player2)) {
 	    board2.tryMove(board2.curPiece, board2.curX - 1, board2.curY);
+	}
+	    
 
     }
 
     private void moveRight(Player player) {
-	if (player.equals(Player.Player1))
+	if (player.equals(Player.Player1)) {
 	    board.tryMove(board.curPiece, board.curX + 1, board.curY);
-	if (player.equals(Player.Player2))
+	}
+	    
+	if (player.equals(Player.Player2)) {
 	    board2.tryMove(board2.curPiece, board2.curX + 1, board2.curY);
+	}
+	    
 
     }
 
     private void moveDown(Player player) {
 
-	if (player.equals(Player.Player1))
+	if (player.equals(Player.Player1)) {
 	    board.tryMove(board.curPiece, board.curX, board.curY - 1);
-	if (player.equals(Player.Player2))
+	}
+	    
+	if (player.equals(Player.Player2)) {
 	    board2.tryMove(board2.curPiece, board2.curX, board2.curY - 1);
+	}
+	    
 
     }
 
     private void moveHardDown(Player player) {
 
-	if (player.equals(Player.Player1))
+	if (player.equals(Player.Player1)) {
 	    board.dropDown();
-	if (player.equals(Player.Player2))
+	}
+	    
+	if (player.equals(Player.Player2)) {
 	    board2.dropDown();
+	}
+	    
 
     }
 
     private void exchangePeace(Player player) {
 
-	if (player.equals(Player.Player1))
+	if (player.equals(Player.Player1)) {
 	    board.exchangePiece();
-	if (player.equals(Player.Player2))
+	}
+	if (player.equals(Player.Player2)) {
 	    board2.exchangePiece();
+	}
+	    
 
     }
 
     private void ghostMode(Player player) {
 	if (player.equals(Player.Player1)) {
-	    if (board.isGhost)
+	    if (board.isGhost) {
 		board.isGhost = false;
+	    }
 	    else {
-		board.infoBoard.ghostUsed += 300;
+		board.ghostUsed += 300;
 		board.isGhost = true;
 	    }
 	}
 
 	if (player.equals(Player.Player2)) {
-	    if (board2.isGhost)
+	    if (board2.isGhost) {
 		board2.isGhost = false;
+	    }
 	    else {
-		board2.infoBoard.ghostUsed += 300;
+		board2.ghostUsed += 300;
 		board2.isGhost = true;
 	    }
 	}
@@ -116,19 +149,25 @@ public class KeyHandler extends KeyAdapter {
     }
 
     public void keyPressed(KeyEvent e) {
-
-	System.out.println("GameBoard : " + e.getKeyCode());
 	
-	if (playMode.equals(PlayerMode.Single)) {
+	if (playMode.equals(PlayerMode.Single) || playMode.equals(PlayerMode.AI)) {
 	    switch (e.getKeyCode()) {
 
 	    case KeyEvent.VK_ENTER:
 		reset(Player.Player1);
+		
+		if(playMode.equals(PlayerMode.AI))
+		    reset(Player.Neo);
+		
 		break;
 
 	    case KeyEvent.VK_ESCAPE:
 	    case KeyEvent.VK_P:
 		pause(Player.Player1);
+		
+		if(playMode.equals(PlayerMode.AI))
+		    pause(Player.Neo);
+		
 		break;
 
 	    case KeyEvent.VK_UP:
@@ -155,6 +194,10 @@ public class KeyHandler extends KeyAdapter {
 
 	    case KeyEvent.VK_G:
 		ghostMode(Player.Player1);
+		break;
+		
+	    case KeyEvent.VK_Q:
+		showTitlePanel(Player.Player1);
 		break;
 
 	    }
@@ -222,6 +265,10 @@ public class KeyHandler extends KeyAdapter {
 		break;
 	    case KeyEvent.VK_BACK_SPACE:
 		ghostMode(Player.Player2);
+		break;
+		
+	    case KeyEvent.VK_Q:
+		showTitlePanel(Player.Player1);
 		break;
 
 	    }
