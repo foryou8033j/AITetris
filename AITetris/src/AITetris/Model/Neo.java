@@ -45,14 +45,14 @@ public class Neo extends JPanel implements ActionListener {
 		BoardHeight = gameBoard.BoardHeight;
 
 		weightModel = new int[BoardWidth][BoardHeight];
-
+		
 		cognitionModel = new CognitionModel();
 		decisionModel = new DecisionModel(gameBoard);
 
 		setLayout(null);
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
 		setFocusable(false);
-
+		
 		timer = new Timer(1, this);
 		timer.start();
 
@@ -83,6 +83,7 @@ public class Neo extends JPanel implements ActionListener {
 	private void getBoard() {
 		this.board = gameBoard.getBoard();
 
+		decisionModel.clear();
 		clearWeightModel();
 
 		int tmpVoidBoardCount = 0;
