@@ -2,6 +2,11 @@ package AITetris.Model.NeoModel;
 
 import AITetris.View.Board.Tetrimino.Shape;
 
+/**
+ * 가중치 저장 모델
+ * @author Jeongsam
+ *
+ */
 public class WeightModel {
 
 	int x;
