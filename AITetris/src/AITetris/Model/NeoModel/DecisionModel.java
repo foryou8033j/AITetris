@@ -13,7 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
- * 블럭 가중치에 따른 결정 모델
+ * 블럭 가중치에 따른 의사 결정 모델
  * 
  * @author Jeongsam
  *

@@ -2,6 +2,11 @@ package AITetris.Model.NeoModel;
 
 import AITetris.View.Board.GameBoard;
 
+/**
+ * 원격 컨트롤 모델
+ * @author Jeongsam
+ *
+ */
 public class ControlModel {
 
     private GameBoard gameBoard;
