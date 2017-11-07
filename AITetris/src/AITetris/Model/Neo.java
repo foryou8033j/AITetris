@@ -53,7 +53,7 @@ public class Neo extends JPanel implements ActionListener {
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
 		setFocusable(false);
 
-		timer = new Timer(1000, this);
+		timer = new Timer(200, this);
 		timer.start();
 
 	}
@@ -190,6 +190,8 @@ public class Neo extends JPanel implements ActionListener {
 	@Override
     public void actionPerformed(ActionEvent e) {
     	
+	//getBoard();	
+	
 	if(decisionModel == null)
 		return;
     	
@@ -198,7 +200,7 @@ public class Neo extends JPanel implements ActionListener {
 			decisionModel.checkBoard(weightModel, BoardWidth);
 		
 		if(decisionModel.thinkEnd && !decisionModel.moveEnd) {
-			decisionModel.decision();
+			decisionModel.decision(weightModel);
 		}
 			
 	}

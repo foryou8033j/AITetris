@@ -79,26 +79,30 @@ public class DecisionModel {
 
 		int newX = gameBoard.curX;
 		
+		//블럭을 최좌측으로 밀착시킨다.
 		while (newX > 0) {
 			if (!gameBoard.tryMove(gameBoard.curPiece, newX - 1, gameBoard.curY))
 				break;
 			--newX;
 		}
 
-		while (newX <= BoardWidth) {
+		
+		while (newX <= BoardWidth+1) {
 			
 			int tmpY = gameBoard.curY;
 			
 			Shape tmpShape = new Shape();
 			tmpShape.setShape(gameBoard.curPiece.getShape());
 			
-			
+			int tmpXbeforeRotation = newX;
 			
 			//회전에 따라 구현한다
-			for(int rotation=0; rotation<4; rotation++) {
+			for(int rotation=0; rotation<6; rotation++) {
 				
 				//gameBoard.tryMove(gameBoard.curPiece.rotateRight(), gameBoard.curX, gameBoard.curY);
 				tmpShape = tmpShape.rotateRight();
+				newX = tmpXbeforeRotation;
+				tmpY = gameBoard.curY;
 				
 				//블럭을 최하단으로 내린다고 가정한다.
 				while (tmpY > 0) {
@@ -117,7 +121,7 @@ public class DecisionModel {
 					}
 						
 				}catch (Exception e) {
-					
+					e.printStackTrace();
 				}
 				
 				this.weightModel.add(new WeightModel(newX, tmpY, weightSum, tmpShape));
@@ -139,23 +143,42 @@ public class DecisionModel {
 
 	}
 
-	public boolean decision() {
+	public boolean decision(int[][] weightBoard) {
 		
 		moveEnd = true;
 
 		int higherWeight = 0;
 		int higherIndex = 0;
 		
+		int lessVoidCell = 0;
+		
 		//최고 가중치 모델을 찾는다
 		for(int i=0; i<weightModel.size(); i++) {
-			if(higherWeight < weightModel.get(i).getWeight()) {
+			if(higherWeight <= weightModel.get(i).getWeight()) {
 				higherWeight = weightModel.get(i).getWeight();
 				higherIndex = i;
+				
+				int voidCell = 0;
+				
+				/*// 해당 가중치 열의 빈칸의 수를 구한다.
+				for(; voidCell<gameBoard.BoardWidth; voidCell++) {
+					if(weightBoard[voidCell][weightModel.get(i).getY()] != -1)
+						voidCell++;
+				}
+				
+				//빈칸의 수가 더 적다면 해당 모델을 적용
+				if(lessVoidCell > voidCell) {
+					higherWeight = weightModel.get(i).getWeight();
+					higherIndex = i;
+				}*/
+				
 			}
 			
 		}
 		
 		//최고 가중치 형태로 블럭을 회전한다.
+		//TODO : 가중치 모델 적용을 위해 블럭 회전시에 보드를 벗어 나는 문제 있음
+		//TODO : 예외 처리 필요
 		gameBoard.curPiece = weightModel.get(higherIndex).getShape();
 		/*try {
 			for(int i=weightModel.get(higherIndex).getRotation(); i>=0; --i)
