@@ -87,7 +87,7 @@ public class DecisionModel {
 		}
 
 		
-		while (newX <= BoardWidth+1) {
+		while (newX <= BoardWidth) {
 			
 			int tmpY = gameBoard.curY;
 			

@@ -12,18 +12,18 @@ public class CognitionModel {
     public int[][] recognitionWeight(int[][] weightModel, int width, int height){
 	
 	//가장 낮은 층의 블럭이 0이다, 한칸씩 높여가며 가중치를 낮춘다.
-	int weightMult = 1;
+	int weightMult = 0;
 	
 	for (int j = 0; j < width; ++j) {
 	    for (int i = height-1; i >= 0; --i) {
 		if(weightModel[j][i] == -1) continue;
 		
-		weightModel[j][i] = weightMult*=2;
+		weightModel[j][i] = weightMult += 10;
 		
 	    }
 	    
 	    //새로운 열에서 가중치값을 초기화한다.
-	    weightMult = 1;
+	    weightMult = 0;
 	}
 	
 	return weightModel;

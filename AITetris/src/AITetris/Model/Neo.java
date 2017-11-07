@@ -53,7 +53,7 @@ public class Neo extends JPanel implements ActionListener {
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
 		setFocusable(false);
 
-		timer = new Timer(200, this);
+		timer = new Timer(1, this);
 		timer.start();
 
 	}
