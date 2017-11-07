@@ -11,16 +11,16 @@ public class ControlModel {
 	
     }
     
-    public void moveLeft() {
-	gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX-1, gameBoard.curY);
+    public boolean  moveLeft() {
+    	return gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX - 1, gameBoard.curY);
     }
     
-    public void moveRight() {
-	gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX+1, gameBoard.curY);
+    public boolean moveRight() {
+    	return gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX + 1, gameBoard.curY);
     }
     
-    public void moveDown() {
-	gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX, gameBoard.curY-1);
+    public boolean moveDown() {
+    	return gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX, gameBoard.curY-1);
     }
     
     public void moveHardDown() {

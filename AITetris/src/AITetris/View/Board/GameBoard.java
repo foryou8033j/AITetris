@@ -132,7 +132,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	return (int) getSize().getHeight() / BoardHeight;
     }
 
-    private Tetrominoes shapeAt(int x, int y) {
+    public Tetrominoes shapeAt(int x, int y) {
 	return board[(y * BoardWidth) + x];
     }
 
@@ -320,6 +320,9 @@ public class GameBoard extends JPanel implements ActionListener {
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "Point Result", line += metr.getHeight());
 	drawStringCenterOfPanel(g, Color.BLUE, 16, String.valueOf(point - ghostUsed), line += metr.getHeight());
 
+	if(player.equals(Player.Neo))
+		reset();
+	
 	quit();
 
     }
@@ -488,7 +491,7 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     public boolean tryMove(Shape newPiece, int newX, int newY) {
-
+    	
 	if (!isStarted || isPaused)
 	    return false;
 
