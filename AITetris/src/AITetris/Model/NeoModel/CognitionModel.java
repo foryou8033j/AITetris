@@ -34,25 +34,25 @@ public class CognitionModel {
 
 		    try {
 			if (weightModel[j - 1][i] == -1)
-			    weightModel[j][i] += 10;
+			    weightModel[j][i] += 20;
 			
 			if (weightModel[j - 2][i] == -1)
-			    weightModel[j][i] += 10;
+			    weightModel[j][i] += 20;
 
 			if (weightModel[j + 1][i] == -1)
-			    weightModel[j][i] += 10;
+			    weightModel[j][i] += 20;
 			
 			if (weightModel[j + 2][i] == -1)
-			    weightModel[j][i] += 10;
+			    weightModel[j][i] += 20;
 
 			if (weightModel[j][i + 1] == -1)
-			    weightModel[j][i] += 10;
+			    weightModel[j][i] += 20;
 			
 			if (weightModel[j][i + 2] == -1)
-			    weightModel[j][i] += 10;
+			    weightModel[j][i] += 20;
 
 		    } catch (Exception e) {
-			weightModel[j][i] += 20;
+			weightModel[j][i] += 30;
 		    }
 
 		}
