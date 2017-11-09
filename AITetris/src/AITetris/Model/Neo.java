@@ -11,11 +11,8 @@ import javax.swing.Timer;
 
 import AITetris.Model.NeoModel.CognitionModel;
 import AITetris.Model.NeoModel.DecisionModel;
-import AITetris.Model.NeoModel.WeightModel;
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class Neo extends JPanel implements ActionListener {
 
@@ -188,8 +185,7 @@ public class Neo extends JPanel implements ActionListener {
 
 	}
 
-	@Override
-    public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent e) {
     	
 	//getBoard();	
 	

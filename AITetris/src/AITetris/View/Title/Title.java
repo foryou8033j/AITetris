@@ -40,7 +40,7 @@ public class Title extends JPanel {
     
     KeyAdapter keyHandler = null;
 
-    public Title(Tetris tetris) {
+    public Title(final Tetris tetris) {
 	this.tetris = tetris;
 
 	setLayout(null);

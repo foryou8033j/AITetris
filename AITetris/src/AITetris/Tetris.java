@@ -132,7 +132,6 @@ public class Tetris extends JFrame {
 
 	try {
 	    SwingUtilities.invokeAndWait(new Runnable() {
-		@Override
 		public void run() {
 		    new Tetris();
 		}

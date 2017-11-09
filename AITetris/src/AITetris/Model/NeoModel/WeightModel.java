@@ -13,6 +13,8 @@ public class WeightModel {
 	int y;
 	int weight;
 	Shape rotation;
+	
+	// +a 
 
 	public WeightModel(int x, int y) {
 		this.x = x;
