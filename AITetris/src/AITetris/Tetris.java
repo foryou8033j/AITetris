@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import AITetris.Model.Neo;
+import AITetris.Model.NeoType;
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 import AITetris.View.Board.GameBoard;
@@ -121,7 +122,7 @@ public class Tetris extends JFrame {
 	board.requestFocus();
 	board2.requestFocus();
 	
-	Neo neo = new Neo(board2);
+	Neo neo = new Neo(board2, NeoType.LEARNING);
 	neo.setBounds(20*3 + B_WIDTH_SIZE*2, 20, (int) getSize().getWidth() - B_WIDTH_SIZE*2 - 90, B_HEIGHT_SIZE);
 	getContentPane().add(neo);
 	

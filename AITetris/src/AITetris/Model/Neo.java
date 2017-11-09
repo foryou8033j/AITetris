@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -11,11 +12,14 @@ import javax.swing.Timer;
 
 import AITetris.Model.NeoModel.CognitionModel;
 import AITetris.Model.NeoModel.DecisionModel;
+import AITetris.Model.dl4jModel.DeepLearningModel;
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
 
 public class Neo extends JPanel implements ActionListener {
 
+	private NeoType type;
+	
 	private int BoardWidth;
 	private int BoardHeight;
 
@@ -33,8 +37,17 @@ public class Neo extends JPanel implements ActionListener {
 
 	private CognitionModel cognitionModel;
 	private DecisionModel decisionModel;
+	
+	private DeepLearningModel deepLearningModel  = null; 
 
-	public Neo(GameBoard gameBoard) {
+	public Neo(GameBoard gameBoard, NeoType neoType) {
+		
+		setLayout(null);
+		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
+		setFocusable(false);
+		
+		this.type = neoType;
+		
 		this.gameBoard = gameBoard;
 		this.board = gameBoard.getBoard();
 
@@ -43,15 +56,25 @@ public class Neo extends JPanel implements ActionListener {
 
 		weightModel = new int[BoardWidth][BoardHeight];
 		
-		cognitionModel = new CognitionModel();
-		decisionModel = new DecisionModel(gameBoard);
-
-		setLayout(null);
-		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
-		setFocusable(false);
 		
-		timer = new Timer(1, this);
-		timer.start();
+		if(neoType.equals(NeoType.LEARNING)) {
+			
+			try {
+				deepLearningModel = new DeepLearningModel(gameBoard);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}else {
+			cognitionModel = new CognitionModel();
+			decisionModel = new DecisionModel(gameBoard);
+
+			
+			
+			timer = new Timer(1, this);
+			timer.start();
+		}
 
 	}
 
@@ -112,11 +135,15 @@ public class Neo extends JPanel implements ActionListener {
 	public void paint(Graphics g) {
 		super.paint(g);
 
-		getBoard();
-		drawPeace(g);
-		drawWeight(g);
-		repaint();
-
+		if(type.equals(NeoType.LOGIC)) {
+			getBoard();
+			drawPeace(g);
+			drawWeight(g);
+			repaint();
+		}else {
+			if(deepLearningModel != null)
+				deepLearningModel.paint(g);
+		}
 	}
 
 	// 블럭을 그린다
@@ -189,19 +216,20 @@ public class Neo extends JPanel implements ActionListener {
     	
 	//getBoard();	
 	
-	if(decisionModel == null)
-		return;
-    	
-	if(decisionModel.decisionEnd) {
-		if(decisionModel.thinkEnd)
-			decisionModel.checkBoard(weightModel, BoardWidth);
-		
-		if(decisionModel.thinkEnd && !decisionModel.moveEnd) {
-			decisionModel.decision(weightModel);
-		}
+	if(this.type.equals(NeoType.LOGIC)) {
+		if(decisionModel == null)
+			return;
+	    	
+		if(decisionModel.decisionEnd) {
+			if(decisionModel.thinkEnd)
+				decisionModel.checkBoard(weightModel, BoardWidth);
 			
+			if(decisionModel.thinkEnd && !decisionModel.moveEnd) {
+				decisionModel.decision(weightModel);
+			}
+		}
 	}
-	
+
     }
 
 }
