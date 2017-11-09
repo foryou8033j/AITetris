@@ -45,7 +45,7 @@ public class DecisionModel {
 
     public void clear() {
 
-	System.out.println("Clear");
+	//System.out.println("Clear");
 
 	mostHigherRotation = 0;
 	mostHigherWeight = 0;
@@ -125,10 +125,10 @@ public class DecisionModel {
 		int weightSum = 0;
 
 		// 모든 셀의 가중치 합을 구한다.
-		System.out.print(newX + " : ");
+		//System.out.print(newX + " : ");
 		try {
 		    for (int i = 0; i < 4; i++) {
-			System.out.print(weightBoard[newX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + " ");
+			//System.out.print(weightBoard[newX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + " ");
 			weightSum += weightBoard[newX + tmpShape.x(i)][tmpY - tmpShape.y(i)];
 			tmpWeightBoard[newX + tmpShape.x(i)][tmpY - tmpShape.y(i)] = -1;
 
@@ -150,7 +150,7 @@ public class DecisionModel {
 		    }
 
 		} catch (Exception e) {
-		    e.printStackTrace();
+		    //e.printStackTrace();
 		}
 
 		// 가로 열을 연산하여 빈칸에 따른 가중치를 연산한다.
@@ -165,7 +165,7 @@ public class DecisionModel {
 
 		this.weightModel.add(new WeightModel(newX, tmpY, weightSum, tmpShape));
 
-		System.out.println(" = " + weightSum + " rotation " + rotation);
+		//System.out.println(" = " + weightSum + " rotation " + rotation);
 
 	    }
 
@@ -231,10 +231,10 @@ public class DecisionModel {
 		// int y = gameBoard.curY - gameBoard.curPiece.y(i);
 
 		if (x <= 0) {
-		    System.out.println("MOVE RIGHT");
+		    //System.out.println("MOVE RIGHT");
 		    gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX + 2, gameBoard.curY);
 		} else if (x >= gameBoard.BoardWidth) {
-		    System.out.println("MOVE LEFT");
+		    //System.out.println("MOVE LEFT");
 		    gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX - 2, gameBoard.curY);
 		}
 	    }
@@ -242,17 +242,17 @@ public class DecisionModel {
 
 	while (true) {
 
-	    System.out.println("current X : " + gameBoard.curX);
-	    System.out.println("Higher X : " + higherIndex);
-	    System.out.println("Higher Data : " + higherIndex + " " + weightModel.get(higherIndex).getWeight());
+	    //System.out.println("current X : " + gameBoard.curX);
+	    //System.out.println("Higher X : " + higherIndex);
+	    //System.out.println("Higher Data : " + higherIndex + " " + weightModel.get(higherIndex).getWeight());
 
 	    if (gameBoard.curX > weightModel.get(higherIndex).getX()) {
-		System.out.println("MOVE LEFT");
+		//System.out.println("MOVE LEFT");
 		if (!controlModel.moveLeft())
 		    break;
 
 	    } else if (gameBoard.curX < weightModel.get(higherIndex).getX()) {
-		System.out.println("MOVE RIGHT");
+		//System.out.println("MOVE RIGHT");
 		if (!controlModel.moveRight())
 		    break;
 	    } else {

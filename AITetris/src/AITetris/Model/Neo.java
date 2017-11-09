@@ -18,216 +18,262 @@ import AITetris.View.Board.Tetrimino.Tetrominoes;
 
 public class Neo extends JPanel implements ActionListener {
 
-	private NeoType type;
-	
-	private int BoardWidth;
-	private int BoardHeight;
+    private NeoType type;
 
-	private GameBoard gameBoard;
+    private int BoardWidth;
+    private int BoardHeight;
 
-	private Tetrominoes[] board;
-	private Timer timer;
+    private GameBoard gameBoard;
 
-	// ObservableList<WeightModel> weightModel =
-	// FXCollections.observableArrayList();
+    private Tetrominoes[] board;
+    private Timer timer;
 
-	private int voidBoardCount = 0;
+    // ObservableList<WeightModel> weightModel =
+    // FXCollections.observableArrayList();
 
-	private int weightModel[][];
+    private int voidBoardCount = 0;
 
-	private CognitionModel cognitionModel;
-	private DecisionModel decisionModel;
-	
-	private DeepLearningModel deepLearningModel  = null; 
+    private int weightModel[][];
 
-	public Neo(GameBoard gameBoard, NeoType neoType) {
-		
-		setLayout(null);
-		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
-		setFocusable(false);
-		
-		this.type = neoType;
-		
-		this.gameBoard = gameBoard;
-		this.board = gameBoard.getBoard();
+    private CognitionModel cognitionModel;
+    private DecisionModel decisionModel;
 
-		BoardWidth = gameBoard.BoardWidth;
-		BoardHeight = gameBoard.BoardHeight;
+    private DeepLearningModel deepLearningModel = null;
 
-		weightModel = new int[BoardWidth][BoardHeight];
-		
-		
-		if(neoType.equals(NeoType.LEARNING)) {
-			
-			try {
-				deepLearningModel = new DeepLearningModel(gameBoard);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}else {
-			cognitionModel = new CognitionModel();
-			decisionModel = new DecisionModel(gameBoard);
+    public Neo(GameBoard gameBoard, NeoType neoType) {
 
-			
-			
-			timer = new Timer(1, this);
-			timer.start();
-		}
+	setLayout(null);
+	setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
+	setFocusable(false);
+
+	this.type = neoType;
+
+	this.gameBoard = gameBoard;
+	this.board = gameBoard.getBoard();
+
+	BoardWidth = gameBoard.BoardWidth;
+	BoardHeight = gameBoard.BoardHeight;
+
+	weightModel = new int[BoardWidth][BoardHeight];
+
+	cognitionModel = new CognitionModel();
+	decisionModel = new DecisionModel(gameBoard);
+
+	if (neoType.equals(NeoType.LEARNING)) {
+
+	    try {
+		deepLearningModel = new DeepLearningModel(this, gameBoard);
+	    } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+
+	} else {
 
 	}
 
-	private Tetrominoes shapeAt(int x, int y) {
-		return board[(y * BoardWidth) + x];
+	timer = new Timer(1, this);
+	timer.start();
+
+    }
+
+    private Tetrominoes shapeAt(int x, int y) {
+	return board[(y * BoardWidth) + x];
+    }
+
+    // 블럭의 단일 세로 크기 반환
+    int squareWidth() {
+	return (int) (getSize().getWidth() - 100) / BoardWidth;
+    }
+
+    // 블럭의 단일 세로 크기 반환
+    int squareHeight() {
+	return (int) getSize().getHeight() / BoardHeight;
+    }
+
+    private void clearWeightModel() {
+	for (int i = 0; i < BoardHeight; ++i) {
+	    for (int j = 0; j < BoardWidth; ++j) {
+		weightModel[j][i] = 0;
+	    }
 	}
+    }
 
-	// 블럭의 단일 세로 크기 반환
-	int squareWidth() {
-		return (int) (getSize().getWidth() - 100) / BoardWidth;
-	}
+    public int[][] getModel() {
 
-	// 블럭의 단일 세로 크기 반환
-	int squareHeight() {
-		return (int) getSize().getHeight() / BoardHeight;
-	}
+	this.board = gameBoard.getBoard();
 
-	private void clearWeightModel() {
-		for (int i = 0; i < BoardHeight; ++i) {
-			for (int j = 0; j < BoardWidth; ++j) {
-				weightModel[j][i] = 0;
-			}
-		}
-	}
+	clearWeightModel();
 
-	private void getBoard() {
-		this.board = gameBoard.getBoard();
+	int tmpVoidBoardCount = 0;
 
-		decisionModel.clear();
-		clearWeightModel();
-
-		int tmpVoidBoardCount = 0;
-
-		for (int i = 0; i < BoardHeight; ++i) {
-			for (int j = 0; j < BoardWidth; ++j) {
-				if (shapeAt(j, i) == Tetrominoes.NoShape) {
-					weightModel[j][i] = 0; // 블럭이 비어있는 경우 0으로 처리한다
-				} else {
-					weightModel[j][i] = -1; // 블럭이 이미 있는 경우 -1로 가중치를 계산하지 않는다
-					tmpVoidBoardCount++;
-				}
-					
-			}
-		}
-
-		// 빈 칸의 개수가 변한 경우 블럭의 하강이 완료 된 것으로 네오는 인식한다.
-		if (tmpVoidBoardCount != voidBoardCount) {
-			voidBoardCount = tmpVoidBoardCount;
-			decisionModel.clear();
+	for (int i = 0; i < BoardHeight; ++i) {
+	    for (int j = 0; j < BoardWidth; ++j) {
+		if (shapeAt(j, i) == Tetrominoes.NoShape) {
+		    weightModel[j][i] = 0; // 블럭이 비어있는 경우 0으로 처리한다
+		} else {
+		    weightModel[j][i] = 1; // 블럭이 이미 있는 경우 1로 처리한다.
+		    tmpVoidBoardCount++;
 		}
 
-		// 가중치 연산
-		weightModel = cognitionModel.recognitionWeight(weightModel, BoardWidth, BoardHeight);
-
+	    }
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		super.paint(g);
+	// 빈 칸의 개수가 변한 경우 블럭의 하강이 완료 된 것으로 네오는 인식한다.
+	if (tmpVoidBoardCount != voidBoardCount) {
+	    voidBoardCount = tmpVoidBoardCount;
 
-		if(type.equals(NeoType.LOGIC)) {
-			getBoard();
-			drawPeace(g);
-			drawWeight(g);
-			repaint();
-		}else {
-			if(deepLearningModel != null)
-				deepLearningModel.paint(g);
+	    new Thread(() -> {
+		try {
+		    deepLearningModel.initLearn();
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
 		}
-	}
-
-	// 블럭을 그린다
-	private void drawPeace(Graphics g) {
-		// 보드에 저장된 블럭을 그린다
-		for (int i = 0; i < BoardHeight; ++i) {
-			for (int j = 0; j < BoardWidth; ++j) {
-				Tetrominoes shape = shapeAt(j, BoardHeight - i - 1);
-
-				int x = 10 + j * squareWidth();
-				int y = i * squareHeight();
-
-				drawSquare(g, x, y, shape);
-			}
-		}
-
-		// 현재 하강중인 블럭을 그린다
-		// 현재 블럭을 그린다
-		if (gameBoard.curPiece.getShape() != Tetrominoes.NoShape) {
-			for (int i = 0; i < 4; ++i) {
-				int x = gameBoard.curX + gameBoard.curPiece.x(i);
-				int y = gameBoard.curY - gameBoard.curPiece.y(i);
-				drawSquare(g, 10 + x * squareWidth(), (BoardHeight - y - 1) * squareHeight(),
-						gameBoard.curPiece.getShape());
-			}
-		}
+	    }).start();
 
 	}
 
-	// 단일 블럭을 그린다
-	private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
+	return weightModel;
 
-		if (shape != Tetrominoes.NoShape) {
+    }
 
-			g.setColor(Color.LIGHT_GRAY);
-			g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
+    public int[][] getWeightModel() {
+	this.board = gameBoard.getBoard();
+
+	decisionModel.clear();
+	clearWeightModel();
+
+	int tmpVoidBoardCount = 0;
+
+	for (int i = 0; i < BoardHeight; ++i) {
+	    for (int j = 0; j < BoardWidth; ++j) {
+		if (shapeAt(j, i) == Tetrominoes.NoShape) {
+		    weightModel[j][i] = 0; // 블럭이 비어있는 경우 0으로 처리한다
+		} else {
+		    weightModel[j][i] = -1; // 블럭이 이미 있는 경우 -1로 가중치를 계산하지 않는다
+		    tmpVoidBoardCount++;
 		}
 
+	    }
 	}
 
-	/**
-	 * 각 위치의 가중치를 시각화한다.
-	 * 
-	 * @param g
-	 *            그래픽스 모델
-	 * @param x
-	 *            좌표
-	 * @param y
-	 *            좌표
-	 */
-	private void drawWeight(Graphics g) {
-
-		g.setColor(Color.BLACK);
-
-		for (int i = 0; i < BoardHeight; ++i) {
-			for (int j = 0; j < BoardWidth; ++j) {
-
-				int x = 8 + j * squareWidth();
-				int y = 575 - i * squareHeight();
-
-				g.drawString(String.valueOf(weightModel[j][i]), (x + 1) + squareWidth() / 2 - 3,
-						4 + (y + 1) + squareHeight() / 2);
-
-			}
-		}
-
+	// 빈 칸의 개수가 변한 경우 블럭의 하강이 완료 된 것으로 네오는 인식한다.
+	if (tmpVoidBoardCount != voidBoardCount) {
+	    voidBoardCount = tmpVoidBoardCount;
+	    decisionModel.clear();
 	}
 
-	public void actionPerformed(ActionEvent e) {
-    	
-	//getBoard();	
-	
-	if(this.type.equals(NeoType.LOGIC)) {
-		if(decisionModel == null)
-			return;
-	    	
-		if(decisionModel.decisionEnd) {
-			if(decisionModel.thinkEnd)
-				decisionModel.checkBoard(weightModel, BoardWidth);
-			
-			if(decisionModel.thinkEnd && !decisionModel.moveEnd) {
-				decisionModel.decision(weightModel);
-			}
-		}
+	// 가중치 연산
+	weightModel = cognitionModel.recognitionWeight(weightModel, BoardWidth, BoardHeight);
+
+	return weightModel;
+
+    }
+
+    @Override
+    public void paint(Graphics g) {
+	super.paint(g);
+
+	getWeightModel();
+	drawPeace(g);
+	drawWeight(g);
+	repaint();
+
+	if (type.equals(NeoType.LOGIC)) {
+
+	} else {
+
+	    if (deepLearningModel != null)
+		deepLearningModel.paint(g);
+	}
+    }
+
+    // 블럭을 그린다
+    private void drawPeace(Graphics g) {
+	// 보드에 저장된 블럭을 그린다
+	for (int i = 0; i < BoardHeight; ++i) {
+	    for (int j = 0; j < BoardWidth; ++j) {
+		Tetrominoes shape = shapeAt(j, BoardHeight - i - 1);
+
+		int x = 10 + j * squareWidth();
+		int y = i * squareHeight();
+
+		drawSquare(g, x, y, shape);
+	    }
+	}
+
+	// 현재 하강중인 블럭을 그린다
+	// 현재 블럭을 그린다
+	if (gameBoard.curPiece.getShape() != Tetrominoes.NoShape) {
+	    for (int i = 0; i < 4; ++i) {
+		int x = gameBoard.curX + gameBoard.curPiece.x(i);
+		int y = gameBoard.curY - gameBoard.curPiece.y(i);
+		drawSquare(g, 10 + x * squareWidth(), (BoardHeight - y - 1) * squareHeight(),
+			gameBoard.curPiece.getShape());
+	    }
+	}
+
+    }
+
+    // 단일 블럭을 그린다
+    private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
+
+	if (shape != Tetrominoes.NoShape) {
+
+	    g.setColor(Color.LIGHT_GRAY);
+	    g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
+	}
+
+    }
+
+    /**
+     * 각 위치의 가중치를 시각화한다.
+     * 
+     * @param g
+     *            그래픽스 모델
+     * @param x
+     *            좌표
+     * @param y
+     *            좌표
+     */
+    private void drawWeight(Graphics g) {
+
+	g.setColor(Color.BLACK);
+
+	for (int i = 0; i < BoardHeight; ++i) {
+	    for (int j = 0; j < BoardWidth; ++j) {
+
+		int x = 8 + j * squareWidth();
+		int y = 575 - i * squareHeight();
+
+		g.drawString(String.valueOf(weightModel[j][i]), (x + 1) + squareWidth() / 2 - 3,
+			4 + (y + 1) + squareHeight() / 2);
+
+	    }
+	}
+
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+	// getBoard();
+
+	if (decisionModel.decisionEnd) {
+	    if (decisionModel.thinkEnd)
+		decisionModel.checkBoard(weightModel, BoardWidth);
+
+	    if (decisionModel.thinkEnd && !decisionModel.moveEnd) {
+		decisionModel.decision(weightModel);
+	    }
+	}
+
+	if (this.type.equals(NeoType.LOGIC)) {
+	    if (decisionModel == null)
+		return;
+
+	} else {
+	    getModel();
 	}
 
     }
