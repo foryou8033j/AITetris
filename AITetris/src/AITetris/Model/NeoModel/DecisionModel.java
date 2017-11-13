@@ -70,6 +70,7 @@ public class DecisionModel {
 	return true;
     }
 
+    @Deprecated
     public void checkBoard(int[][] weightBoard, int BoardWidth) {
 
 	this.weightModel.clear();
@@ -77,26 +78,46 @@ public class DecisionModel {
 	thinkEnd = false;
 	decisionEnd = false;
 
-	int newX = gameBoard.curX;
-
+	int tmpX = gameBoard.curX;
+	int tmpY = gameBoard.curY;
+	int minX = 0;
+	
 	// 블럭을 최좌측으로 밀착시킨다.
-	while (newX > 0) {
-	    if (!gameBoard.tryMove(gameBoard.curPiece, newX - 1, gameBoard.curY))
-		break;
-	    --newX;
-	}
+	
 
-	if (newX < 0)
-	    newX = 0;
+	if (tmpX < 0)
+		tmpX = 0;
+	
+	int tmpXLocationBeforeMove = tmpX;
 
-	while (newX < BoardWidth) {
+	
+	while (tmpX < BoardWidth) {
+		
+		//기준위치는 실제 블럭의 X좌표로 한다.
+		if(tmpX < gameBoard.curX) {
+			//회전을 한 후 좌표 이동을 하여 충돌연산을 수행한다.
+			
+			
+		}
+		else {
+			
+		}
 
-	    int tmpY = gameBoard.curY;
+		//세로 높이를 갱신한다.
+	    tmpY = gameBoard.curY;
 
+	    //가상의 테트로미노를 생성한다.
 	    Shape tmpShape = new Shape();
 	    tmpShape.setShape(gameBoard.curPiece.getShape());
 
-	    int tmpXbeforeRotation = newX;
+	    
+	    while (tmpX > minX) {
+		    if (!gameBoard.tryMove(gameBoard.curPiece, tmpX - 1, gameBoard.curY))
+			break;
+		    --tmpX;
+		}
+	    minX++;
+	    
 
 	    // 회전에 따라 구현한다
 	    for (int rotation = 0; rotation < 4; rotation++) {
@@ -104,12 +125,12 @@ public class DecisionModel {
 		// gameBoard.tryMove(gameBoard.curPiece.rotateRight(), gameBoard.curX,
 		// gameBoard.curY);
 		tmpShape = tmpShape.rotateRight();
-		newX = tmpXbeforeRotation;
+		tmpX = tmpXLocationBeforeMove;
 		tmpY = gameBoard.curY;
 
 		// 블럭을 최하단으로 내린다고 가정한다.
 		while (tmpY > 0) {
-		    if (!tryPieceMove(tmpShape, newX, tmpY - 1))
+		    if (!tryPieceMove(tmpShape, tmpX, tmpY - 1))
 			break;
 		    --tmpY;
 		}
@@ -125,22 +146,22 @@ public class DecisionModel {
 		int weightSum = 0;
 
 		// 모든 셀의 가중치 합을 구한다.
-		System.out.print(newX + " : ");
+		System.out.print(tmpX + " : ");
 		try {
 		    for (int i = 0; i < 4; i++) {
-			System.out.print(weightBoard[newX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + " ");
-			weightSum += weightBoard[newX + tmpShape.x(i)][tmpY - tmpShape.y(i)];
-			tmpWeightBoard[newX + tmpShape.x(i)][tmpY - tmpShape.y(i)] = -1;
+			System.out.print(weightBoard[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + " ");
+			weightSum += weightBoard[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)];
+			tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] = -1;
 
 			try {
 			    
-			    if (tmpWeightBoard[newX - 1 + tmpShape.x(i)][tmpY - tmpShape.y(i)] == -1)
+			    if (tmpWeightBoard[tmpX - 1 + tmpShape.x(i)][tmpY - tmpShape.y(i)] == -1)
 				weightSum += 1;
-			    if (tmpWeightBoard[newX + tmpShape.x(i)][tmpY + 1 - tmpShape.y(i)] == -1)
+			    if (tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY + 1 - tmpShape.y(i)] == -1)
 				weightSum += 1;
-			    if (tmpWeightBoard[newX + 1 + tmpShape.x(i)][tmpY - tmpShape.y(i)] == -1)
+			    if (tmpWeightBoard[tmpX + 1 + tmpShape.x(i)][tmpY - tmpShape.y(i)] == -1)
 				weightSum += 1;
-			    if (tmpWeightBoard[newX + tmpShape.x(i)][tmpY - 1 - tmpShape.y(i)] == -1)
+			    if (tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY - 1 - tmpShape.y(i)] == -1)
 				weightSum += 1;
 			    
 			} catch (Exception e) {
@@ -153,33 +174,122 @@ public class DecisionModel {
 		    e.printStackTrace();
 		}
 
-		// 가로 열을 연산하여 빈칸에 따른 가중치를 연산한다.
-		/*
-		 * for(int i=0; i<gameBoard.BoardWidth; i++) {
-		 * 
-		 * for (int j = 0; j < 4; j++) {
-		 * 
-		 * if(tmpShape.y(j) == 1) { if( tmpWeightBoard[i][tmpY - tmpShape.y(i)] == -1)
-		 * weightSum -= 10; } } }
-		 */
-
-		this.weightModel.add(new WeightModel(newX, tmpY, weightSum, tmpShape));
+		this.weightModel.add(new WeightModel(tmpX, tmpY, weightSum, tmpShape));
 
 		System.out.println(" = " + weightSum + " rotation " + rotation);
 
 	    }
 
 	    // 다음 위치를 연산하기 전 이동 할 수 없으면 반복을 중단한다.
-	    if (!tryPieceMove(gameBoard.curPiece, newX + 1, gameBoard.curY))
+	    if (!tryPieceMove(gameBoard.curPiece, tmpX + 1, gameBoard.curY))
 		break;
 
-	    ++newX;
+	    ++tmpX;
 	}
 
 	gameBoard.repaint();
 
 	thinkEnd = true;
 
+    }
+    
+    //각 좌표에 대한 테트리미노의 가중치를 연산한다.
+    public void checkBoardWeight(int[][] weightBoard) {
+    	
+    	//원본 테트리미노의 형태와 좌표값을 받아 가상의 블럭을 생성한다.
+    	Shape tmpShape = gameBoard.curPiece;
+    	int tmpX = 0;
+    	int tmpY = gameBoard.curY;
+    	
+    	
+    	//현재 좌표 기준 좌/우의 블럭 배치시 가중치를 연산한다.
+    	while(tmpX < gameBoard.BoardWidth) {
+    		
+    		
+    		//가상 블럭이 현재 좌표 기준 좌측일때의 가중치 연산
+    		if(tmpX <= gameBoard.curX) {
+    			if(tryPieceMove(tmpShape, tmpX, tmpY))
+    				getTetriminoWeight(tmpShape, tmpX, weightBoard);
+    			
+    		}else {	//가상 블럭이 현재 좌표 기준 우측일때의 가중치 연산
+    			if(tryPieceMove(tmpShape, tmpX, tmpY))
+    				getTetriminoWeight(tmpShape, tmpX, weightBoard);
+    		}
+    		
+    		tmpX++;
+    		
+    	}
+    	
+    }
+    
+    private void getTetriminoWeight(Shape shape, int x, int[][] boardWeight) {
+    	
+    	Shape tmpShape = shape;
+    	int tmpX = x;
+    	int tmpY = gameBoard.curY;
+    	
+    	for(int rotate=0; rotate<4; rotate++) {
+    		
+    		//블럭을 회전시킨다.
+    		tmpShape.rotateRight();
+    		
+    		//블럭을 최하단으로 내린다고 가정한다.
+    		while (tmpY > 0) {
+    		    if (!tryPieceMove(tmpShape, x, tmpY - 1))
+    			break;
+    		    --tmpY;
+    		}
+    		
+    		//블럭이 놓였다고 가정할때의 보드 전체 가중치를 재연산한다.
+    		int[][] tmpWeightBoard = new int[gameBoard.BoardWidth][gameBoard.BoardHeight];
+
+    		for (int i = 0; i < gameBoard.BoardHeight; i++) {
+    		    for (int j = 0; j < gameBoard.BoardWidth; j++) {
+    			tmpWeightBoard[j][i] = boardWeight[j][i];
+    		    }
+    		}
+    		
+    		int weightSum = 0;
+
+    		// 모든 셀의 가중치 합을 구한다.
+    		System.out.print(tmpX + " : ");
+    		try {
+    		    for (int i = 0; i < 4; i++) {
+    			System.out.print(boardWeight[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + " ");
+    			weightSum += boardWeight[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)];
+    			tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] = -1;
+
+    			try {
+    			    
+    			    if (tmpWeightBoard[tmpX - 1 + tmpShape.x(i)][tmpY - tmpShape.y(i)] == -1)
+    				weightSum += 1;
+    			    if (tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY + 1 - tmpShape.y(i)] == -1)
+    				weightSum += 1;
+    			    if (tmpWeightBoard[tmpX + 1 + tmpShape.x(i)][tmpY - tmpShape.y(i)] == -1)
+    				weightSum += 1;
+    			    if (tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY - 1 - tmpShape.y(i)] == -1)
+    				weightSum += 1;
+    			    
+    			} catch (Exception e) {
+    			    weightSum += 1;
+    			}
+
+    		    }
+
+    		} catch (Exception e) {
+    		    e.printStackTrace();
+    		}
+
+    		this.weightModel.add(new WeightModel(x, gameBoard.curY, weightSum, tmpShape));
+
+    		System.out.println(" = " + weightSum + " rotation " + rotate);
+    		
+    		//return new WeightModel(x, gameBoard.curY, weightSum, tmpShape);
+    		
+    		
+    	}
+    	
+    	
     }
 
     public boolean decision(int[][] weightBoard) {
