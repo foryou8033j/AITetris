@@ -2,7 +2,7 @@ package AITetris.View.Board.Tetrimino;
 
 import java.util.Random;
 
-public class Shape {
+public class Shape implements Cloneable {
 
 	private Tetrominoes pieceShape;
 	private int coords[][];
@@ -100,6 +100,20 @@ public class Shape {
 		}
 
 		return result;
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		
+		Object obj = null;
+		try {
+			obj = super.clone();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return obj;
 	}
 
 }

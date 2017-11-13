@@ -123,7 +123,7 @@ public class Tetris extends JFrame {
 		board.requestFocus();
 		board2.requestFocus();
 
-		Neo neo = new Neo(board2, NeoType.LEARNING);
+		Neo neo = new Neo(board2, NeoType.LOGIC);
 		neo.setBounds(20 * 3 + B_WIDTH_SIZE * 2, 20, (int) getSize().getWidth() - B_WIDTH_SIZE * 2 - 90, B_HEIGHT_SIZE);
 		getContentPane().add(neo);
 

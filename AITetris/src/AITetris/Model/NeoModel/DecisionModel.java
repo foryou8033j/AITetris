@@ -1,11 +1,5 @@
 package AITetris.Model.NeoModel;
 
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.util.Observable;
-
-import javax.swing.SwingUtilities;
-
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Shape;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
@@ -224,15 +218,22 @@ public class DecisionModel {
     
     private void getTetriminoWeight(Shape shape, int x, int[][] boardWeight) {
     	
-    	Shape tmpShape = shape;
+    	Shape tmpShape = null;
+    	
+    	try {
+    		tmpShape = (Shape) shape.clone();
+    	}catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    	
     	int tmpX = x;
-    	int tmpY = gameBoard.curY;
     	
     	for(int rotate=0; rotate<4; rotate++) {
     		
     		//블럭을 회전시킨다.
     		tmpShape.rotateRight();
     		
+    		int tmpY = gameBoard.curY;
     		//블럭을 최하단으로 내린다고 가정한다.
     		while (tmpY > 0) {
     		    if (!tryPieceMove(tmpShape, x, tmpY - 1))
@@ -280,7 +281,7 @@ public class DecisionModel {
     		    e.printStackTrace();
     		}
 
-    		this.weightModel.add(new WeightModel(x, gameBoard.curY, weightSum, tmpShape));
+    		this.weightModel.add(new WeightModel(tmpX, gameBoard.curY, weightSum, tmpShape));
 
     		System.out.println(" = " + weightSum + " rotation " + rotate);
     		
