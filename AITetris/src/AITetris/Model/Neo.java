@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -12,14 +11,11 @@ import javax.swing.Timer;
 
 import AITetris.Model.NeoModel.CognitionModel;
 import AITetris.Model.NeoModel.DecisionModel;
-import AITetris.Model.dl4jModel.DeepLearningModel;
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
 
 public class Neo extends JPanel implements ActionListener {
 
-	private NeoType type;
-	
 	private int BoardWidth;
 	private int BoardHeight;
 
@@ -37,17 +33,13 @@ public class Neo extends JPanel implements ActionListener {
 
 	private CognitionModel cognitionModel;
 	private DecisionModel decisionModel;
-	
-	private DeepLearningModel deepLearningModel  = null; 
 
-	public Neo(GameBoard gameBoard, NeoType neoType) {
-		
+	public Neo(GameBoard gameBoard) {
+
 		setLayout(null);
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
 		setFocusable(false);
-		
-		this.type = neoType;
-		
+
 		this.gameBoard = gameBoard;
 		this.board = gameBoard.getBoard();
 
@@ -55,26 +47,12 @@ public class Neo extends JPanel implements ActionListener {
 		BoardHeight = gameBoard.BoardHeight;
 
 		weightModel = new int[BoardWidth][BoardHeight];
-		
-		
-		if(neoType.equals(NeoType.LEARNING)) {
-			
-			try {
-				deepLearningModel = new DeepLearningModel(gameBoard);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}else {
-			cognitionModel = new CognitionModel();
-			decisionModel = new DecisionModel(gameBoard);
 
-			
-			
-			timer = new Timer(1, this);
-			timer.start();
-		}
+		cognitionModel = new CognitionModel();
+		decisionModel = new DecisionModel(gameBoard);
+
+		timer = new Timer(1, this);
+		timer.start();
 
 	}
 
@@ -116,7 +94,7 @@ public class Neo extends JPanel implements ActionListener {
 					weightModel[j][i] = -1; // 블럭이 이미 있는 경우 -1로 가중치를 계산하지 않는다
 					tmpVoidBoardCount++;
 				}
-					
+
 			}
 		}
 
@@ -135,15 +113,11 @@ public class Neo extends JPanel implements ActionListener {
 	public void paint(Graphics g) {
 		super.paint(g);
 
-		if(type.equals(NeoType.LOGIC)) {
-			getBoard();
-			drawPeace(g);
-			drawWeight(g);
-			repaint();
-		}else {
-			if(deepLearningModel != null)
-				deepLearningModel.paint(g);
-		}
+		getBoard();
+		drawPeace(g);
+		drawWeight(g);
+		repaint();
+
 	}
 
 	// 블럭을 그린다
@@ -213,24 +187,22 @@ public class Neo extends JPanel implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-    	
-	//getBoard();	
-	
-	if(this.type.equals(NeoType.LOGIC)) {
-		if(decisionModel == null)
+
+		// getBoard();
+
+		if (decisionModel == null)
 			return;
-	    	
-		if(decisionModel.decisionEnd) {
-			if(decisionModel.thinkEnd)
+
+		if (decisionModel.decisionEnd) {
+			if (decisionModel.thinkEnd)
 				decisionModel.checkBoardWeight(weightModel);
-				//decisionModel.checkBoard(weightModel, BoardWidth);
-			
-			if(decisionModel.thinkEnd && !decisionModel.moveEnd) {
+			// decisionModel.checkBoard(weightModel, BoardWidth);
+
+			if (decisionModel.thinkEnd && !decisionModel.moveEnd) {
 				decisionModel.decision(weightModel);
 			}
 		}
-	}
 
-    }
+	}
 
 }
