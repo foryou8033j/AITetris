@@ -23,6 +23,8 @@ public class CognitionModel {
 					continue;
 
 				weightModel[j][i] = weightMult += 10;
+				if(i==0)
+					weightModel[j][i] += 20;
 
 			}
 
@@ -36,25 +38,25 @@ public class CognitionModel {
 
 					try {
 						if (weightModel[j - 1][i] == -1)
-							weightModel[j][i] += 20;
+							weightModel[j][i] += 30;
 
 						if (weightModel[j - 2][i] == -1)
-							weightModel[j][i] += 20;
+							weightModel[j][i] += 30;
 
 						if (weightModel[j + 1][i] == -1)
-							weightModel[j][i] += 20;
+							weightModel[j][i] += 30;
 
 						if (weightModel[j + 2][i] == -1)
-							weightModel[j][i] += 20;
+							weightModel[j][i] += 30;
 
 						if (weightModel[j][i + 1] == -1)
-							weightModel[j][i] += 20;
+							weightModel[j][i] += 30;
 
 						if (weightModel[j][i + 2] == -1)
-							weightModel[j][i] += 20;
+							weightModel[j][i] += 30;
 
 					} catch (Exception e) {
-						weightModel[j][i] += 30;
+						weightModel[j][i] += 50;
 					}
 
 				}

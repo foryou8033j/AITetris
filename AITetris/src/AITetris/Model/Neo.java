@@ -33,6 +33,8 @@ public class Neo extends JPanel implements ActionListener {
 
 	private CognitionModel cognitionModel;
 	private DecisionModel decisionModel;
+	
+	private Graphics g;
 
 	public Neo(GameBoard gameBoard) {
 
@@ -49,7 +51,7 @@ public class Neo extends JPanel implements ActionListener {
 		weightModel = new int[BoardWidth][BoardHeight];
 
 		cognitionModel = new CognitionModel();
-		decisionModel = new DecisionModel(gameBoard);
+		decisionModel = new DecisionModel(this, gameBoard);
 
 		timer = new Timer(1, this);
 		timer.start();
@@ -61,12 +63,12 @@ public class Neo extends JPanel implements ActionListener {
 	}
 
 	// 블럭의 단일 세로 크기 반환
-	int squareWidth() {
+	public int squareWidth() {
 		return (int) (getSize().getWidth() - 100) / BoardWidth;
 	}
 
 	// 블럭의 단일 세로 크기 반환
-	int squareHeight() {
+	public int squareHeight() {
 		return (int) getSize().getHeight() / BoardHeight;
 	}
 
@@ -115,7 +117,23 @@ public class Neo extends JPanel implements ActionListener {
 
 		getBoard();
 		drawPeace(g);
+		
+		
+		if (decisionModel != null) {
+			if (decisionModel.decisionEnd) {
+				if (decisionModel.thinkEnd)
+					//getBoard();
+					decisionModel.checkBoardWeight(g, weightModel);
+					// decisionModel.checkBoard(weightModel, BoardWidth);
+
+				if (decisionModel.thinkEnd && !decisionModel.moveEnd) {
+					decisionModel.decision(weightModel);
+				}
+			}
+		}
+		
 		drawWeight(g);
+		
 		repaint();
 
 	}
@@ -148,7 +166,7 @@ public class Neo extends JPanel implements ActionListener {
 	}
 
 	// 단일 블럭을 그린다
-	private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
+	public  void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
 
 		if (shape != Tetrominoes.NoShape) {
 
@@ -190,19 +208,7 @@ public class Neo extends JPanel implements ActionListener {
 
 		// getBoard();
 
-		if (decisionModel == null)
-			return;
-
-		if (decisionModel.decisionEnd) {
-			if (decisionModel.thinkEnd)
-				getBoard();
-				decisionModel.checkBoardWeight(weightModel);
-				// decisionModel.checkBoard(weightModel, BoardWidth);
-
-			if (decisionModel.thinkEnd && !decisionModel.moveEnd) {
-				decisionModel.decision(weightModel);
-			}
-		}
+		
 
 	}
 

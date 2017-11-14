@@ -123,12 +123,12 @@ public class GameBoard extends JPanel implements ActionListener {
     }
 
     // 블럭의 단일 가로 크기 반환
-    int squareWidth() {
+    private int squareWidth() {
 	return (int) (getSize().getWidth() - 100) / BoardWidth;
     }
 
     // 블럭의 단일 세로 크기 반환
-    int squareHeight() {
+    private int squareHeight() {
 	return (int) getSize().getHeight() / BoardHeight;
     }
 
@@ -612,7 +612,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	return sum;
     }
 
-    private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
+    public void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
 	Color colors[] = { new Color(0, 0, 0), new Color(204, 102, 102), new Color(102, 204, 102),
 		new Color(102, 102, 204), new Color(204, 204, 102), new Color(204, 102, 204), new Color(102, 204, 204),
 		new Color(218, 170, 0) };

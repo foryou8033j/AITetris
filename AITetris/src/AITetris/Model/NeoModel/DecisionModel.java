@@ -1,5 +1,14 @@
 package AITetris.Model.NeoModel;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.util.Random;
+
+import javax.swing.SwingUtilities;
+
+import AITetris.Model.Neo;
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Shape;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
@@ -14,6 +23,7 @@ import javafx.collections.ObservableList;
  */
 public class DecisionModel {
 
+	private Neo neo;
 	private GameBoard gameBoard;
 
 	public boolean thinkEnd = false;
@@ -27,9 +37,14 @@ public class DecisionModel {
 
 	private ControlModel controlModel;
 
+	Shape tmpShape = null;
+	int tmpX = 0;
+	int tmpY = 0;
+
 	ObservableList<WeightModel> weightModel = FXCollections.observableArrayList();
 
-	public DecisionModel(GameBoard gameBoard) {
+	public DecisionModel(Neo neo, GameBoard gameBoard) {
+		this.neo = neo;
 		this.gameBoard = gameBoard;
 
 		controlModel = new ControlModel(gameBoard);
@@ -182,7 +197,7 @@ public class DecisionModel {
 	}
 
 	// 각 좌표에 대한 테트리미노의 가중치를 연산한다.
-	public void checkBoardWeight(int[][] weightBoard) {
+	public void checkBoardWeight(Graphics g, int[][] weightBoard) {
 
 		this.weightModel.clear();
 
@@ -198,7 +213,7 @@ public class DecisionModel {
 		while (tmpX < gameBoard.BoardWidth) {
 
 			// 가상 블럭이 현재 좌표 기준 좌측일때의 가중치 연산
-			getTetriminoWeight(tmpShape, tmpX, weightBoard);
+			getTetriminoWeight(g, tmpShape, tmpX, weightBoard);
 
 			tmpX++;
 
@@ -210,10 +225,10 @@ public class DecisionModel {
 
 	}
 
-	private void getTetriminoWeight(Shape shape, int x, int[][] boardWeight) {
+	private void getTetriminoWeight(Graphics g, Shape shape, int x, int[][] boardWeight) {
 
-		Shape tmpShape = null;
-		
+		tmpShape = null;
+
 		// 임시 블럭을 복사한다.
 		try {
 			tmpShape = (Shape) shape.clone();
@@ -221,9 +236,28 @@ public class DecisionModel {
 			e.printStackTrace();
 		}
 
-		
-
+		//g.setColor(new Color(new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255)));
 		for (int rotate = 0; rotate < 4; rotate++) {
+			
+			Color color = Color.BLACK;
+			
+			switch (rotate) {
+			case 0:
+				color = Color.RED;
+				break;
+			case 1:
+				color = Color.BLUE;
+				break;
+			case 2:
+				color = Color.GREEN;
+				break;
+			case 3:
+				color = Color.YELLOW;
+				break;
+			}
+			
+			g.setColor(color);
+			
 
 			// 블럭이 놓였다고 가정할때의 가중치 재연산을 위해 기존 가중치값을 복사한다.
 			int[][] tmpWeightBoard = new int[gameBoard.BoardWidth][gameBoard.BoardHeight];
@@ -233,11 +267,11 @@ public class DecisionModel {
 					tmpWeightBoard[j][i] = boardWeight[j][i];
 				}
 			}
-			
+
 			int removeLines = 0;
 			int weightSum = 0;
-			int tmpX = x;
-			int tmpY = gameBoard.curY;
+			tmpX = x;
+			tmpY = gameBoard.curY;
 
 			// 블럭을 회전시킨다.
 			tmpShape = tmpShape.rotateRight();
@@ -253,77 +287,128 @@ public class DecisionModel {
 				--tmpY;
 			}
 
+			if (tmpShape.getShape() != Tetrominoes.NoShape) {
+				for (int i = 0; i < 4; ++i) {
+
+					int drawX = tmpX + tmpShape.x(i);
+					int drawY = tmpY - tmpShape.y(i);
+
+					g.setColor(g.getColor().darker());
+					g.fillRect((10 + drawX * neo.squareWidth()) + 1, ((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight()) + 1, neo.squareWidth() - 2, neo.squareHeight() - 2);
+					
+					int sideX = (10 + drawX * neo.squareWidth());
+					int sideY = ((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight());
+					
+					g.setColor(color);
+					g.drawLine(sideX, sideY + neo.squareHeight() - 1, sideX, sideY);
+					g.drawLine(sideX, sideY, sideX + neo.squareWidth() - 1, sideY);
+
+					g.setColor(color);
+					g.drawLine(sideX + 1, sideY + neo.squareHeight() - 1, sideX + neo.squareWidth() - 1, sideY + neo.squareHeight() - 1);
+					g.drawLine(sideX + neo.squareWidth() - 1, sideY + neo.squareHeight() - 1, sideX + neo.squareWidth() - 1, sideY + 1);
+					
+				}
+			}
+
+			SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+
+				}
+			});
+
 			// 모든 셀의 가중치 합을 구한다.
 			System.out.print(tmpX + " : ");
 			try {
-				
-				//블럭이 놓여진 위치의 가중치의 합산값을 구한다.
+
+				// 블럭이 놓여진 위치의 가중치의 합산값을 구한다.
 				for (int i = 0; i < 4; i++) {
 					System.out.print(boardWeight[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + " ");
 					weightSum += boardWeight[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)];
 					tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] = -1;
 				}
-				
-				
+
 				removeLines = 0;
-				
-				//블럭이 놓여졌다고 가정할 때 제거되는 라인의 합산값을 가중치에 더한다.
-				for (int i=0; i<4; i++) {
-					
+
+				// 블럭이 놓여졌다고 가정할 때 제거되는 라인의 합산값을 가중치에 더한다.
+				for (int i = 0; i < 4; i++) {
+
 					int existCells = 0;
-					for(int cellX=0; cellX<gameBoard.BoardWidth; cellX++) {
-						if(tmpWeightBoard[cellX][tmpY - tmpShape.y(i)] == -1)
+					for (int cellX = 0; cellX < gameBoard.BoardWidth; cellX++) {
+						if (tmpWeightBoard[cellX][tmpY - tmpShape.y(i)] == -1)
 							existCells++;
 					}
-					if(existCells == gameBoard.BoardWidth)
+					if (existCells == gameBoard.BoardWidth)
 						removeLines++;
 				}
-				weightSum+=removeLines * 90;
-				
-				//블럭이 놓여 졌다고 가정할 때 놓여진 블럭이 빈공간을 만드는 갯수 만큼 가중치를 낮춘다.
-				int voidCellBelowBlock =0;
+				weightSum += removeLines * 100;
+
+				// 블럭이 놓여 졌다고 가정할 때 놓여진 블럭이 빈공간을 만드는 갯수 만큼 가중치를 낮춘다.
+				int voidCellBelowBlock = 0;
 				int voidCellMadeBlock = 0;
-				for(int i=0; i<4; i++) {
-					
-					int belowBlocks=0;
-					
-					for(int h = tmpY - tmpShape.y(i); h > 0; h--) {
-						
-						if(belowBlocks > 2) break;
-						
-						if(tmpWeightBoard[tmpX + tmpShape.x(i)][h] != -1)
+				for (int i = 0; i < 4; i++) {
+
+					int belowBlocks = 0;
+
+					for (int h = tmpY - tmpShape.y(i); h >= 0; --h) {
+
+						if (belowBlocks > 2)
+							break;
+
+						if (tmpWeightBoard[tmpX + tmpShape.x(i)][h] != -1)
 							voidCellBelowBlock++;
 						belowBlocks++;
-							
+
 					}
-					weightSum -= voidCellBelowBlock * 50;
-					if(voidCellBelowBlock > 0)
-						voidCellMadeBlock ++;
-					System.out.println("Void Cell Vount "+ voidCellBelowBlock);
+					weightSum -= voidCellBelowBlock * 70;
+					if (voidCellBelowBlock > 0)
+						voidCellMadeBlock++;
+					System.out.println("Void Cell Vount " + voidCellBelowBlock);
 				}
-				
-				weightSum -= voidCellMadeBlock *= 6;
-				
-				/*int voidCellCount = 0;
-				//블럭이 놓여졌다고 가정할 때 빈공간의 개수가 많을수록 가중치를 낮춘다.
-				for(int cellY = 0; cellY < gameBoard.BoardHeight ; cellY++) {
-					for(int cellX = 0; cellX < gameBoard.BoardWidth; cellX++) {
-						if(tmpWeightBoard[cellX][cellY] != -1)
-							voidCellCount++;
-					}
-				}
-				
-				weightSum -= voidCellCount*8;*/
-				
-				
+
+				weightSum -= voidCellMadeBlock *= 60;
+
+				/*
+				 * int voidCellCount = 0; //블럭이 놓여졌다고 가정할 때 빈공간의 개수가 많을수록 가중치를 낮춘다. for(int
+				 * cellY = 0; cellY < gameBoard.BoardHeight ; cellY++) { for(int cellX = 0;
+				 * cellX < gameBoard.BoardWidth; cellX++) { if(tmpWeightBoard[cellX][cellY] !=
+				 * -1) voidCellCount++; } }
+				 * 
+				 * weightSum -= voidCellCount*8;
+				 */
 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-			//현재 구해진 가중치값을 가중치모델에 추가한다.
+			int drawX = tmpX;
+			int drawY = tmpY;
+
+			Font tmpFont = g.getFont();
+			Font small = new Font("Helvetica", Font.BOLD, 14);
+			//FontMetrics metr = getFontMetrics(small);
+			g.setFont(small);
+			g.setColor(Color.BLACK);
+			g.drawString(String.valueOf(weightSum), (10 + drawX * neo.squareWidth()) + 1, ((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight()) + 1);
+			
+			g.setFont(tmpFont);
+			//g.fillRect(, , neo.squareWidth() - 2, neo.squareHeight() - 2);
+			
+			
+			// 현재 구해진 가중치값을 가중치모델에 추가한다.
 			try {
-				this.weightModel.add(new WeightModel(tmpX, gameBoard.curY, weightSum, (Shape) tmpShape.clone()));
+				
+				int mostHigherWeight = 0;
+				
+				for(WeightModel model:this.weightModel) {
+					if(model.getWeight() > mostHigherWeight)
+						mostHigherWeight = model.getWeight();
+				}
+				
+				if(mostHigherWeight < weightSum)
+					this.weightModel.add(new WeightModel(tmpX, gameBoard.curY, weightSum, (Shape) tmpShape.clone()));
+				
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}
