@@ -28,7 +28,7 @@ public class Tetris extends JFrame {
 		super();
 		setTitle("AITetris");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(20, 20, 1330, 680);
+		setBounds(5, 5, 1330, 680);
 		setLocationByPlatform(true);
 		setFocusable(false);
 		setResizable(false);
