@@ -195,6 +195,7 @@ public class Neo extends JPanel implements ActionListener {
 
 		if (decisionModel.decisionEnd) {
 			if (decisionModel.thinkEnd)
+				getBoard();
 				decisionModel.checkBoardWeight(weightModel);
 				// decisionModel.checkBoard(weightModel, BoardWidth);
 

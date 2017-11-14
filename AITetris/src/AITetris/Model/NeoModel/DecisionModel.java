@@ -278,20 +278,42 @@ public class DecisionModel {
 					if(existCells == gameBoard.BoardWidth)
 						removeLines++;
 				}
-				weightSum+=removeLines * 50;
+				weightSum+=removeLines * 90;
 				
-				//블럭이 놓여졌다고 가정할 때 전체 블럭의 높이가 높을수록 가중치를 뺀다
-				/*for(int cellY = 0; cellY < gameBoard.BoardHeight ; cellY++) {
+				//블럭이 놓여 졌다고 가정할 때 놓여진 블럭이 빈공간을 만드는 갯수 만큼 가중치를 낮춘다.
+				int voidCellBelowBlock =0;
+				int voidCellMadeBlock = 0;
+				for(int i=0; i<4; i++) {
 					
-					for(int cellX = 0; cellX < gameBoard.BoardWidth; cellX++) {
+					int belowBlocks=0;
+					
+					for(int h = tmpY - tmpShape.y(i); h > 0; h--) {
 						
-						if(tmpWeightBoard[cellX][cellY] == -1) {
-							weightSum -= cellY*30;
-							break;
-						}
+						if(belowBlocks > 2) break;
+						
+						if(tmpWeightBoard[tmpX + tmpShape.x(i)][h] != -1)
+							voidCellBelowBlock++;
+						belowBlocks++;
+							
 					}
-					
-				}*/
+					weightSum -= voidCellBelowBlock * 50;
+					if(voidCellBelowBlock > 0)
+						voidCellMadeBlock ++;
+					System.out.println("Void Cell Vount "+ voidCellBelowBlock);
+				}
+				
+				weightSum -= voidCellMadeBlock *= 6;
+				
+				/*int voidCellCount = 0;
+				//블럭이 놓여졌다고 가정할 때 빈공간의 개수가 많을수록 가중치를 낮춘다.
+				for(int cellY = 0; cellY < gameBoard.BoardHeight ; cellY++) {
+					for(int cellX = 0; cellX < gameBoard.BoardWidth; cellX++) {
+						if(tmpWeightBoard[cellX][cellY] != -1)
+							voidCellCount++;
+					}
+				}
+				
+				weightSum -= voidCellCount*8;*/
 				
 				
 
