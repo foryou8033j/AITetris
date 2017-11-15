@@ -4,6 +4,8 @@ public enum PlayerMode {
 
     Single,
     Duo,
-    AI
+    Duo_Competition,
+    AI,
+    AI_Competition
     
 }

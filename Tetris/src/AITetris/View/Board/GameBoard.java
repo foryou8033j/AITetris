@@ -38,6 +38,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	boolean isGhost = false;
 	boolean isOver = false;
 	boolean isWin = false;
+	boolean isCompetition = false;
 
 	private int numLinesRemoved = 0;
 	private int numTetrominoDropCount = 0;
@@ -67,10 +68,11 @@ public class GameBoard extends JPanel implements ActionListener {
 	PlayerMode playMode;
 	Player player;
 
-	public GameBoard(PlayerMode playMode, Player player, int x, int y, int width, int height) {
+	public GameBoard(boolean isCompetition, PlayerMode playMode, Player player, int x, int y, int width, int height) {
 
 		this.playMode = playMode;
 		this.player = player;
+		this.isCompetition = isCompetition;
 
 		setLayout(null);
 		setBounds(x, y, width, height);
@@ -636,6 +638,43 @@ public class GameBoard extends JPanel implements ActionListener {
 	
 	public int getPoint() {
 		return point - ghostUsed; 
+	}
+	
+	public boolean isCompetition() {
+		return isCompetition;
+	}
+	
+	public int getNumLineRemoved() {
+		int tmp = numLinesRemoved;
+		numLinesRemoved = 0;
+		return tmp;
+	}
+	
+	public void attack(int attackPower) {
+		
+		
+		switch(attackPower) {
+		case 1:
+			
+			for(int x=0;x<BoardWidth; x++) {
+				board[((0) * BoardWidth) + x] = Tetrominoes.MirroredLShape;
+			}
+			
+			
+			break;
+		case 2:
+			
+			break;
+		case 3:
+			
+			break;
+		case 4:
+			
+			break;
+		}
+		
+		
+		
 	}
 
 	public void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
