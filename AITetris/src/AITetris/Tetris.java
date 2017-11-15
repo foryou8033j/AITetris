@@ -7,6 +7,7 @@ import AITetris.Model.Neo;
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 import AITetris.View.Board.GameBoard;
+import AITetris.View.Board.GameController;
 import AITetris.View.Board.KeyHandler;
 import AITetris.View.Title.Title;
 
@@ -94,6 +95,8 @@ public class Tetris extends JFrame {
 
 		board.addKeyListener(keyHandler);
 		board2.addKeyListener(keyHandler);
+		
+		new GameController(board, board2).start();
 
 		getContentPane().add(board);
 		getContentPane().add(board2);
@@ -116,6 +119,8 @@ public class Tetris extends JFrame {
 		board.addKeyListener(keyHandler);
 		board2.addKeyListener(keyHandler);
 
+		new GameController(board, board2).start();
+		
 		getContentPane().add(board);
 		getContentPane().add(board2);
 
