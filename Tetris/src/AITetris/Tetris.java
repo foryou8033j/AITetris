@@ -68,7 +68,7 @@ public class Tetris extends JFrame {
 
 		PlayerMode playMode = PlayerMode.Single;
 
-		GameBoard board = new GameBoard(playMode, Player.Player1, (int) (getSize().getWidth() / 2) - (B_WIDTH_SIZE / 2),
+		GameBoard board = new GameBoard(false, playMode, Player.Player1, (int) (getSize().getWidth() / 2) - (B_WIDTH_SIZE / 2),
 				20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 		KeyHandler keyHandler = new KeyHandler(this, playMode, board, null);
@@ -86,9 +86,9 @@ public class Tetris extends JFrame {
 
 		PlayerMode playMode = PlayerMode.Duo;
 
-		GameBoard board = new GameBoard(playMode, Player.Player1, 20 + B_WIDTH_SIZE / 2, 20, B_WIDTH_SIZE,
+		GameBoard board = new GameBoard(false,playMode, Player.Player1, 20 + B_WIDTH_SIZE / 2, 20, B_WIDTH_SIZE,
 				B_HEIGHT_SIZE);
-		GameBoard board2 = new GameBoard(playMode, Player.Player2, 20 + B_WIDTH_SIZE / 2 + B_WIDTH_SIZE + 20, 20,
+		GameBoard board2 = new GameBoard(false, playMode, Player.Player2, 20 + B_WIDTH_SIZE / 2 + B_WIDTH_SIZE + 20, 20,
 				B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 		KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
@@ -111,8 +111,8 @@ public class Tetris extends JFrame {
 
 		PlayerMode playMode = PlayerMode.AI;
 
-		GameBoard board = new GameBoard(playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
-		GameBoard board2 = new GameBoard(playMode, Player.Neo, 20 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+		GameBoard board = new GameBoard(true, playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+		GameBoard board2 = new GameBoard(true, playMode, Player.Neo, 20 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 		KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
 

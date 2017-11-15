@@ -438,6 +438,12 @@ public class DecisionModel {
 				higherIndex = i;
 			}
 		}
+		
+		if(weightModel.size()==0) {
+			weightModel.clear();
+			moveEnd = false;
+			return true;
+		}
 
 		// 최고 가중치 형태로 블럭을 회전한다.
 		// 최고 가중치의 Shape 를 받아온다.
@@ -448,7 +454,7 @@ public class DecisionModel {
 			weightModel.clear();
 			moveEnd = false;
 			e.printStackTrace();
-			return false;
+			return true;
 		}
 
 		// Board를 벗어나는 검산 오류를 수정한다.

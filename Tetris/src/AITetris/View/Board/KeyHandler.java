@@ -65,36 +65,53 @@ public class KeyHandler extends KeyAdapter {
     private void moveLeft(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    board.tryMove(board.curPiece, board.curX - 1, board.curY);
+		if(board.isCrazyKeyboard) 
+			board.tryMove(board.curPiece, board.curX + 1, board.curY);
+		else
+			board.tryMove(board.curPiece, board.curX - 1, board.curY);
 	}
 	    
 	if (player.equals(Player.Player2)) {
-	    board2.tryMove(board2.curPiece, board2.curX - 1, board2.curY);
+		if(board2.isCrazyKeyboard)
+			board2.tryMove(board2.curPiece, board2.curX + 1, board2.curY);
+		else
+			board2.tryMove(board2.curPiece, board2.curX - 1, board2.curY);
 	}
 	    
 
     }
 
     private void moveRight(Player player) {
-	if (player.equals(Player.Player1)) {
-	    board.tryMove(board.curPiece, board.curX + 1, board.curY);
-	}
-	    
-	if (player.equals(Player.Player2)) {
-	    board2.tryMove(board2.curPiece, board2.curX + 1, board2.curY);
-	}
-	    
+    	if (player.equals(Player.Player1)) {
+    		if(board.isCrazyKeyboard) 
+    			board.tryMove(board.curPiece, board.curX - 1, board.curY);
+    		else
+    			board.tryMove(board.curPiece, board.curX + 1, board.curY);
+    	}
+    	    
+    	if (player.equals(Player.Player2)) {
+    		if(board2.isCrazyKeyboard)
+    			board2.tryMove(board2.curPiece, board2.curX - 1, board2.curY);
+    		else
+    			board2.tryMove(board2.curPiece, board2.curX + 1, board2.curY);
+    	}
 
     }
 
     private void moveDown(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    board.tryMove(board.curPiece, board.curX, board.curY - 1);
+		if(board.isCrazyKeyboard)
+			board.dropDown();
+		else
+			board.tryMove(board.curPiece, board.curX, board.curY - 1);
 	}
 	    
 	if (player.equals(Player.Player2)) {
-	    board2.tryMove(board2.curPiece, board2.curX, board2.curY - 1);
+		if(board2.isCrazyKeyboard)
+			board2.dropDown();
+		else
+			board2.tryMove(board2.curPiece, board2.curX, board2.curY - 1);
 	}
 	    
 

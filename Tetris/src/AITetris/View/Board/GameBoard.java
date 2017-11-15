@@ -1,14 +1,17 @@
 package AITetris.View.Board;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -39,10 +42,14 @@ public class GameBoard extends JPanel implements ActionListener {
 	boolean isOver = false;
 	boolean isWin = false;
 	boolean isCompetition = false;
+	boolean isCrazyKeyboard = false;
+	boolean isAttack = false;
 
 	private int numLinesRemoved = 0;
 	private int numTetrominoDropCount = 0;
 	private int numCountGhostUse = 0;
+	private int attackType = 0;
+	private String attackMessage = "";
 
 	public int curX = 0;
 	public int curY = 0;
@@ -153,6 +160,8 @@ public class GameBoard extends JPanel implements ActionListener {
 			isFallingFinished = false;
 			isGhost = false;
 			isWin = false;
+			isAttack = false;
+			isCrazyKeyboard = false;
 			numCountGhostUse = 0;
 			numLinesRemoved = 0;
 			numTetrominoDropCount = 0;
@@ -284,6 +293,8 @@ public class GameBoard extends JPanel implements ActionListener {
 		if (player.equals(Player.Neo) && !isOver)
 			drawStringCenterOfPanel(g, Color.GRAY, 16, "AI. NEO 가 플레이합니다", 260);
 
+		drawMessageFollowingAttack(g);
+
 		// Limit Line Draw
 		g.setColor(Color.RED);
 		g.drawLine(0, BoardHeight, (int) getSize().getWidth() - 100, BoardHeight);
@@ -304,25 +315,24 @@ public class GameBoard extends JPanel implements ActionListener {
 
 		int line = 150;
 
-		
-		if(playMode.equals(PlayerMode.Duo) || playMode.equals(PlayerMode.AI)) {
-			if(isWin) {
-				if(player.equals(Player.Neo))
-					drawStringCenterOfPanel(g, Color.RED, 36, "NEO WIN!", line - metr.getHeight()*2);
+		if (playMode.equals(PlayerMode.Duo) || playMode.equals(PlayerMode.AI)) {
+			if (isWin) {
+				if (player.equals(Player.Neo))
+					drawStringCenterOfPanel(g, Color.RED, 36, "NEO WIN!", line - metr.getHeight() * 2);
 				else
-					drawStringCenterOfPanel(g, Color.RED, 36, "YOU WIN!", line - metr.getHeight()*2);
+					drawStringCenterOfPanel(g, Color.RED, 36, "YOU WIN!", line - metr.getHeight() * 2);
 			}
-				
+
 			else {
-				
-				if(player.equals(Player.Neo))
-					drawStringCenterOfPanel(g, Color.RED, 36, "NEO LOSE", line - metr.getHeight()*2);
+
+				if (player.equals(Player.Neo))
+					drawStringCenterOfPanel(g, Color.RED, 36, "NEO LOSE", line - metr.getHeight() * 2);
 				else
-					drawStringCenterOfPanel(g, Color.RED, 36, "YOU LOSE", line - metr.getHeight()*2);
+					drawStringCenterOfPanel(g, Color.RED, 36, "YOU LOSE", line - metr.getHeight() * 2);
 			}
-				
+
 		}
-		
+
 		if ((float) (defTime - curTime) / 1000 < 0)
 			drawStringCenterOfPanel(g, Color.RED, 24, "TIME OVER", line += metr.getHeight());
 		else
@@ -635,52 +645,140 @@ public class GameBoard extends JPanel implements ActionListener {
 
 		return sum;
 	}
-	
+
 	public int getPoint() {
-		return point - ghostUsed; 
+		return point - ghostUsed;
 	}
-	
+
 	public boolean isCompetition() {
 		return isCompetition;
 	}
-	
+
 	public int getNumLineRemoved() {
+
+		if (numLinesRemoved > 1) {
+			new Thread(() -> {
+
+				try {
+					isAttack = true;
+					Thread.sleep(2000);
+					isAttack = false;
+
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}).start();
+		}
+
 		int tmp = numLinesRemoved;
 		numLinesRemoved = 0;
 		return tmp;
 	}
-	
+
+	private void drawMessageFollowingAttack(Graphics g) {
+
+		// 공격을 했을 경우
+		if (isAttack) {
+			drawStringCenterOfPanel(g, Color.RED, 38, "공격!", 220);
+		}
+
+		// 공격을 받았을 경우
+		if (attackType == 0)
+			return;
+		else {
+
+			drawStringCenterOfPanel(g, Color.RED, 38, "공격 받음!", 220);
+			drawStringCenterOfPanel(g, Color.RED, 24, attackMessage, 220 + 26);
+
+		}
+
+	}
+
 	public void attack(int attackPower) {
-		
-		
-		switch(attackPower) {
-		case 1:
-			
-			for(int x=0;x<BoardWidth; x++) {
-				board[((0) * BoardWidth) + x] = Tetrominoes.MirroredLShape;
+
+		if (attackPower < 2)
+			return;
+
+		attackType = new Random().nextInt(5) + 1;
+
+		new Thread(() -> {
+			try {
+				Thread.sleep(2000);
+				attackType = 0;
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			
-			
+
+		}).start();
+		
+		
+		switch (attackType) {
+		case 0:
+			break;
+		case 1: // 공격불가
+			attackMessage = "빗나감!";
 			break;
 		case 2:
-			
+			attackMessage = "한 줄 증가!";
+			int passCell = new Random().nextInt(BoardWidth);
+
+			for (int y = BoardHeight - 2; y >= 0; y--) {
+				for (int x = 0; x < BoardWidth; x++) {
+					board[((y + 1) * BoardWidth) + x] = board[(y) * BoardWidth + x];
+					board[(y) * BoardWidth + x] = Tetrominoes.NoShape;
+				}
+			}
+			for (int x = 0; x < BoardWidth; x++) {
+
+				if (passCell == x)
+					continue;
+
+				board[x] = Tetrominoes.DotShape;
+			}
+
+			repaint();
+
 			break;
 		case 3:
-			
+			attackMessage = "블럭 바꾸기!";
+			curPiece.setRandomShape();
+
 			break;
 		case 4:
+			attackMessage = "블럭에 구멍 송송";
+			for(int i=0; i<BoardWidth * BoardHeight; i++) {
+				if(new Random().nextBoolean())
+					board[i] = Tetrominoes.NoShape;
+			}
+			break;
+			
+		case 5:
+			attackMessage = "키보드가 말을 안들어여!";
+			
+			new Thread(() -> {
+				isCrazyKeyboard = true;
+				try {
+					Thread.sleep(4000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				isCrazyKeyboard = false;
+			}).start();
 			
 			break;
 		}
+
 		
-		
-		
+
 	}
 
 	public void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
 		Color colors[] = { new Color(0, 0, 0), new Color(204, 102, 102), new Color(102, 204, 102),
 				new Color(102, 102, 204), new Color(204, 204, 102), new Color(204, 102, 204), new Color(102, 204, 204),
-				new Color(218, 170, 0) };
+				new Color(218, 170, 0), Color.GRAY };
 
 		Color color = colors[shape.ordinal()];
 
