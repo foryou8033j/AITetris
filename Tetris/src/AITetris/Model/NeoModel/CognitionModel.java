@@ -1,8 +1,5 @@
 package AITetris.Model.NeoModel;
 
-import AITetris.View.Board.GameBoard;
-import AITetris.View.Board.Tetrimino.Shape;
-
 /**
  * 블럭의 배치 중요도 연산 모델
  * 
