@@ -1,5 +1,7 @@
 package AITetris.Model.NeoModel;
 
+import java.awt.Robot;
+
 import AITetris.View.Board.GameBoard;
 
 /**

@@ -2,7 +2,7 @@ package AITetris.View.Board.Tetrimino;
 
 import java.util.Random;
 
-public class Shape {
+public class Shape implements Cloneable {
 
 	private Tetrominoes pieceShape;
 	private int coords[][];
@@ -15,9 +15,12 @@ public class Shape {
 
 	public void setShape(Tetrominoes shape) {
 		coordsTable = new int[][][] { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
-				{ { 0, -1 }, { 0, 0 }, { -1, 0 }, { -1, 1 } }, { { 0, -1 }, { 0, 0 }, { 1, 0 }, { 1, 1 } },
-				{ { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } }, { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } },
-				{ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }, { { -1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } },
+				{ { 0, -1 }, { 0, 0 }, { -1, 0 }, { -1, 1 } },
+				{ { 0, -1 }, { 0, 0 }, { 1, 0 }, { 1, 1 } },
+				{ { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } },
+				{ { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } },
+				{ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } },
+				{ { -1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } },
 				{ { 1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } } };
 
 		for (int i = 0; i < 4; i++) {
@@ -100,6 +103,20 @@ public class Shape {
 		}
 
 		return result;
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		
+		Object obj = null;
+		try {
+			obj = super.clone();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return obj;
 	}
 
 }

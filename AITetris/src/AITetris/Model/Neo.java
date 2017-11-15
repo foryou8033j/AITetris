@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -12,13 +11,17 @@ import javax.swing.Timer;
 
 import AITetris.Model.NeoModel.CognitionModel;
 import AITetris.Model.NeoModel.DecisionModel;
-import AITetris.Model.dl4jModel.DeepLearningModel;
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
 
 public class Neo extends JPanel implements ActionListener {
 
+<<<<<<< HEAD
     private NeoType type;
+=======
+	private int BoardWidth;
+	private int BoardHeight;
+>>>>>>> refs/heads/0.2v
 
     private int BoardWidth;
     private int BoardHeight;
@@ -33,15 +36,38 @@ public class Neo extends JPanel implements ActionListener {
 
     private int voidBoardCount = 0;
 
+<<<<<<< HEAD
     private int weightModel[][];
+=======
+	private CognitionModel cognitionModel;
+	private DecisionModel decisionModel;
+	
+	private Graphics g;
+>>>>>>> refs/heads/0.2v
 
+<<<<<<< HEAD
     private CognitionModel cognitionModel;
     private DecisionModel decisionModel;
+=======
+	public Neo(GameBoard gameBoard) {
+
+		setLayout(null);
+		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
+		setFocusable(false);
+
+		this.gameBoard = gameBoard;
+		this.board = gameBoard.getBoard();
+>>>>>>> refs/heads/0.2v
 
     private DeepLearningModel deepLearningModel = null;
 
+<<<<<<< HEAD
     public Neo(GameBoard gameBoard, NeoType neoType) {
+=======
+		weightModel = new int[BoardWidth][BoardHeight];
+>>>>>>> refs/heads/0.2v
 
+<<<<<<< HEAD
 	setLayout(null);
 	setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
 	setFocusable(false);
@@ -69,6 +95,13 @@ public class Neo extends JPanel implements ActionListener {
 	    }
 
 	} else {
+=======
+		cognitionModel = new CognitionModel();
+		decisionModel = new DecisionModel(this, gameBoard);
+
+		timer = new Timer(1, this);
+		timer.start();
+>>>>>>> refs/heads/0.2v
 
 	}
 
@@ -99,14 +132,29 @@ public class Neo extends JPanel implements ActionListener {
 	}
     }
 
+<<<<<<< HEAD
     public int[][] getModel() {
+=======
+	// 블럭의 단일 세로 크기 반환
+	public int squareWidth() {
+		return (int) (getSize().getWidth() - 100) / BoardWidth;
+	}
+>>>>>>> refs/heads/0.2v
 
+<<<<<<< HEAD
 	this.board = gameBoard.getBoard();
+=======
+	// 블럭의 단일 세로 크기 반환
+	public int squareHeight() {
+		return (int) getSize().getHeight() / BoardHeight;
+	}
+>>>>>>> refs/heads/0.2v
 
 	clearWeightModel();
 
 	int tmpVoidBoardCount = 0;
 
+<<<<<<< HEAD
 	for (int i = 0; i < BoardHeight; ++i) {
 	    for (int j = 0; j < BoardWidth; ++j) {
 		if (shapeAt(j, i) == Tetrominoes.NoShape) {
@@ -114,6 +162,23 @@ public class Neo extends JPanel implements ActionListener {
 		} else {
 		    weightModel[j][i] = 1; // 블럭이 이미 있는 경우 1로 처리한다.
 		    tmpVoidBoardCount++;
+=======
+		decisionModel.clear();
+		clearWeightModel();
+
+		int tmpVoidBoardCount = 0;
+
+		for (int i = 0; i < BoardHeight; ++i) {
+			for (int j = 0; j < BoardWidth; ++j) {
+				if (shapeAt(j, i) == Tetrominoes.NoShape) {
+					weightModel[j][i] = 0; // 블럭이 비어있는 경우 0으로 처리한다
+				} else {
+					weightModel[j][i] = -1; // 블럭이 이미 있는 경우 -1로 가중치를 계산하지 않는다
+					tmpVoidBoardCount++;
+				}
+
+			}
+>>>>>>> refs/heads/0.2v
 		}
 
 	    }
@@ -136,6 +201,7 @@ public class Neo extends JPanel implements ActionListener {
 
 	return weightModel;
 
+<<<<<<< HEAD
     }
 
     public int[][] getWeightModel() {
@@ -153,9 +219,34 @@ public class Neo extends JPanel implements ActionListener {
 		} else {
 		    weightModel[j][i] = -1; // 블럭이 이미 있는 경우 -1로 가중치를 계산하지 않는다
 		    tmpVoidBoardCount++;
+=======
+		getBoard();
+		drawPeace(g);
+		
+		
+		if (decisionModel != null) {
+			if (decisionModel.decisionEnd) {
+				if (decisionModel.thinkEnd)
+					//getBoard();
+					decisionModel.checkBoardWeight(g, weightModel);
+					// decisionModel.checkBoard(weightModel, BoardWidth);
+
+				if (decisionModel.thinkEnd && !decisionModel.moveEnd) {
+					decisionModel.decision(weightModel);
+				}
+			}
+>>>>>>> refs/heads/0.2v
 		}
+<<<<<<< HEAD
 
 	    }
+=======
+		
+		drawWeight(g);
+		
+		repaint();
+
+>>>>>>> refs/heads/0.2v
 	}
 
 	// 빈 칸의 개수가 변한 경우 블럭의 하강이 완료 된 것으로 네오는 인식한다.
@@ -164,8 +255,13 @@ public class Neo extends JPanel implements ActionListener {
 	    decisionModel.clear();
 	}
 
+<<<<<<< HEAD
 	// 가중치 연산
 	weightModel = cognitionModel.recognitionWeight(weightModel, BoardWidth, BoardHeight);
+=======
+	// 단일 블럭을 그린다
+	public  void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
+>>>>>>> refs/heads/0.2v
 
 	return weightModel;
 
@@ -214,6 +310,7 @@ public class Neo extends JPanel implements ActionListener {
 	    }
 	}
 
+<<<<<<< HEAD
     }
 
     // 단일 블럭을 그린다
@@ -275,7 +372,14 @@ public class Neo extends JPanel implements ActionListener {
 	} else {
 	    getModel();
 	}
+=======
+	public void actionPerformed(ActionEvent e) {
+>>>>>>> refs/heads/0.2v
 
-    }
+		// getBoard();
+
+		
+
+	}
 
 }
