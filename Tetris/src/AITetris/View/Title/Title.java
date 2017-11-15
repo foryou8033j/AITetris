@@ -1,26 +1,17 @@
 package AITetris.View.Title;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import AITetris.Tetris;
 import AITetris.Util.String.StringPadding;
-import AITetris.View.Player;
-import AITetris.View.PlayerMode;
-import AITetris.View.Board.GameBoard;
-import AITetris.View.Board.KeyHandler;
 
 /**
  * 타이틀 메뉴를 그려주는 패널 클래스
@@ -69,12 +60,22 @@ public class Title extends JPanel {
 			break;
 
 		    case KeyEvent.VK_ENTER:
-			if (curPoint == 0)
-			    tetris.initSingle();
-			if (curPoint == 1)
-			    tetris.initDuo();
-			if (curPoint == 2)
-			    tetris.initNeo();
+		    	switch(curPoint) {
+		    	case 0:
+		    		tetris.initSingle();
+		    		break;
+		    	case 1:
+		    		tetris.initDuo();
+		    		break;
+		    	case 2:
+		    		tetris.initNeo();
+		    		break;
+		    	case 3:
+		    		break;
+		    	case 4:
+		    		System.exit(0);
+		    		break;
+		    	}
 			break;
 		    default:
 			break;
