@@ -351,16 +351,20 @@ public class DecisionModel {
 
 					int belowBlocks = 0;
 
-					for (int h = tmpY - tmpShape.y(i); h >= 0; --h) {
+					for (int h = tmpY - tmpShape.y(i) -1; h >= 0; --h) {
 
 						if (belowBlocks > 2)
 							break;
-
+						
 						if (tmpWeightBoard[tmpX + tmpShape.x(i)][h] != -1)
 							voidCellBelowBlock++;
+						else
+							break;
+						
 						belowBlocks++;
 
 					}
+					
 					weightSum -= voidCellBelowBlock * 70;
 					if (voidCellBelowBlock > 0)
 						voidCellMadeBlock++;
@@ -443,7 +447,10 @@ public class DecisionModel {
 			gameBoard.curPiece = (Shape) weightModel.get(higherIndex).getShape().clone();
 		} catch (CloneNotSupportedException e) {
 			// TODO Auto-generated catch block
+			weightModel.clear();
+			moveEnd = false;
 			e.printStackTrace();
+			return false;
 		}
 
 		// Board를 벗어나는 검산 오류를 수정한다.
