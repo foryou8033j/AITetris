@@ -25,7 +25,7 @@ public class GameController extends Thread{
 		while(true) {
 			
 			try {
-				new Robot().delay(50);
+				new Robot().delay(20);
 			} catch (AWTException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -45,6 +45,7 @@ public class GameController extends Thread{
 				}
 				gameBoard1.doQuitGame();
 				gameBoard2.doQuitGame();
+				
 				break;
 			}else{
 				

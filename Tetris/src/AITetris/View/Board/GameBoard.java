@@ -518,9 +518,9 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	public void doQuitGame() {
 		curPiece.setShape(Tetrominoes.NoShape);
-		timer.stop();
 		isStarted = false;
 		isOver = true;
+		timer.stop();
 		repaint();
 	}
 
@@ -704,7 +704,7 @@ public class GameBoard extends JPanel implements ActionListener {
 
 		new Thread(() -> {
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(3000);
 				attackType = 0;
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -760,7 +760,7 @@ public class GameBoard extends JPanel implements ActionListener {
 			new Thread(() -> {
 				isCrazyKeyboard = true;
 				try {
-					Thread.sleep(4000);
+					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -813,7 +813,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	 */
 	private void drawStringCenterOfPanel(Graphics g, Color color, int size, String str, int height) {
 
-		Font small = new Font("Helvetica", Font.BOLD, size);
+		Font small = new Font("Malgun Gothic", Font.BOLD, size);
 		FontMetrics metr = getFontMetrics(small);
 
 		g.setColor(color);

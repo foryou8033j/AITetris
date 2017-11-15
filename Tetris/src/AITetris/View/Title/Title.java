@@ -26,6 +26,12 @@ public class Title extends JPanel {
     int curPoint = 0;
     int minPoint = 0;
     int maxPoint = 4;
+    
+    boolean duoCompetition = false;
+    boolean aiCompetition = false;
+    
+    boolean isQuitQuestion = false;
+    boolean isQuitCursorOnExit = true;
 
     //TitleKeyHandler keyHandler = new TitleKeyHandler();
     
@@ -58,24 +64,65 @@ public class Title extends JPanel {
 			else
 			    curPoint = 0;
 			break;
+			
+		    case KeyEvent.VK_LEFT:
+			
+			if(isQuitQuestion)
+			    isQuitCursorOnExit = true;
+			
+			if(curPoint == 1) {
+			    if(duoCompetition)
+				duoCompetition = false;
+			}
+			if(curPoint == 2) {
+			    if(aiCompetition)
+				aiCompetition = false;
+			}
+			break;
+			
+		    case KeyEvent.VK_RIGHT:
+			
+			if(isQuitQuestion)
+			    isQuitCursorOnExit = false;
+			
+			if(curPoint == 1) {
+			    if(!duoCompetition)
+				duoCompetition = true;
+			}
+			if(curPoint == 2) {
+			    if(!aiCompetition)
+				aiCompetition = true;
+			}
+			break;
 
 		    case KeyEvent.VK_ENTER:
-		    	switch(curPoint) {
-		    	case 0:
-		    		tetris.initSingle();
-		    		break;
-		    	case 1:
-		    		tetris.initDuo();
-		    		break;
-		    	case 2:
-		    		tetris.initNeo();
-		    		break;
-		    	case 3:
-		    		break;
-		    	case 4:
-		    		System.exit(0);
-		    		break;
-		    	}
+			
+			if(isQuitQuestion && isQuitCursorOnExit)
+			    System.exit(0);
+			else if(isQuitQuestion && !isQuitCursorOnExit) {
+			    isQuitQuestion = false;
+			    isQuitCursorOnExit = true;
+			    repaint();
+			}else {
+			    switch(curPoint) {
+			    	case 0:
+			    		tetris.initSingle();
+			    		break;
+			    	case 1:
+			    		tetris.initDuo(duoCompetition);
+			    		break;
+			    	case 2:
+			    		tetris.initNeo(aiCompetition);
+			    		break;
+			    	case 3:
+			    		break;
+			    	case 4:
+			    		isQuitQuestion = true;
+			    		break;
+			    	}
+			}
+			
+		    	
 			break;
 		    default:
 			break;
@@ -103,28 +150,51 @@ public class Title extends JPanel {
     public void paint(Graphics g) {
 	super.paint(g);
 
-	drawMenues(g);
+	drawTitle(g);
+	
+	if(isQuitQuestion)
+	    drawQuitQuestionMenu(g);
+	else
+	    drawMenues(g);
 
 	repaint();
 
     }
-
-    private void drawMenues(Graphics g) {
-
+    
+    private void drawTitle(Graphics g) {
 	drawStringCenterOfPanel(g, Color.BLACK, 64, "T E T R I S", 120);
 	drawStringCenterOfPanel(g, Color.BLACK, 18, "소프트웨어 분석 및 설계 - 레벨3", 160);
 	drawStringCenterOfPanel(g, Color.BLACK, 16, "20140636 서정삼", 190);
+    }
 
+    private void drawQuitQuestionMenu(Graphics g) {
+	Color color = Color.BLACK;
+	
+	drawStringCenterOfPanel(g, color, 20, StringPadding.getCPad("ARE YOU SURE?", 30, " "), 300);
+	
+	color = (isQuitCursorOnExit ? Color.RED : Color.BLACK);
+	drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("YES", 30, " "), 360);
+	color = (!isQuitCursorOnExit ? Color.RED : Color.BLACK);
+	drawStringCenterOfPanel(g, color, 16, StringPadding.getLPad("NO", 30, " "), 360);
+    }
+    
+    private void drawMenues(Graphics g) {
 	Color color = Color.BLACK;
 
 	color = (curPoint == 0 ? Color.RED : Color.BLACK);
 	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Single", 14, " "), 360);
 
 	color = (curPoint == 1 ? Color.RED : Color.BLACK);
-	drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Human", 15, " "), 400);
+	if(duoCompetition)
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("◀ Human VS Human Competition", 15, " "), 400);
+	else
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Human ▶", 15, " "), 400);
 
 	color = (curPoint == 2 ? Color.RED : Color.BLACK);
-	drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Neo", 15, " "), 440);
+	if(aiCompetition)
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("◀ Human VS Neo Competition", 15, " "), 440);
+	else
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Neo ▶", 15, " "), 440);
 
 	color = (curPoint == 3 ? Color.RED : Color.BLACK);
 	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Help", 14, " "), 480);
@@ -150,7 +220,7 @@ public class Title extends JPanel {
      */
     private void drawStringCenterOfPanel(Graphics g, Color color, int size, String str, int height) {
 
-	Font small = new Font("Helvetica", Font.BOLD, size);
+	Font small = new Font("Malgun Gothic", Font.BOLD, size);
 	FontMetrics metr = getFontMetrics(small);
 
 	g.setColor(color);

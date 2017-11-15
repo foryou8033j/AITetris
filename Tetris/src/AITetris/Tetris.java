@@ -80,15 +80,15 @@ public class Tetris extends JFrame {
 		board.requestFocus();
 	}
 
-	public void initDuo() {
+	public void initDuo(boolean competitionMode) {
 
 		title.clearPanel();
 
 		PlayerMode playMode = PlayerMode.Duo;
 
-		GameBoard board = new GameBoard(false,playMode, Player.Player1, 20 + B_WIDTH_SIZE / 2, 20, B_WIDTH_SIZE,
+		GameBoard board = new GameBoard(competitionMode,playMode, Player.Player1, 20 + B_WIDTH_SIZE / 2, 20, B_WIDTH_SIZE,
 				B_HEIGHT_SIZE);
-		GameBoard board2 = new GameBoard(false, playMode, Player.Player2, 20 + B_WIDTH_SIZE / 2 + B_WIDTH_SIZE + 20, 20,
+		GameBoard board2 = new GameBoard(competitionMode, playMode, Player.Player2, 20 + B_WIDTH_SIZE / 2 + B_WIDTH_SIZE + 20, 20,
 				B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 		KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
@@ -105,14 +105,14 @@ public class Tetris extends JFrame {
 		board2.requestFocus();
 	}
 
-	public void initNeo() {
+	public void initNeo(boolean competitionMode) {
 
 		title.clearPanel();
 
 		PlayerMode playMode = PlayerMode.AI;
 
-		GameBoard board = new GameBoard(true, playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
-		GameBoard board2 = new GameBoard(true, playMode, Player.Neo, 20 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+		GameBoard board = new GameBoard(competitionMode, playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+		GameBoard board2 = new GameBoard(competitionMode, playMode, Player.Neo, 20 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 		KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
 
