@@ -1,12 +1,10 @@
 package AITetris.View.Board;
 
-import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -14,13 +12,20 @@ import java.util.Calendar;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+
+import com.sun.java.swing.SwingUtilities3;
 
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 import AITetris.View.Board.Tetrimino.Shape;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Dialog;
 
 /**
  * 테트리스의 게임 보드를 보여주는 패널
@@ -72,6 +77,8 @@ public class GameBoard extends JPanel implements ActionListener {
 	long curTime;
 	long defTime;
 	long pauseTime;
+	
+	private String name = "NULL";
 
 	PlayerMode playMode;
 	Player player;
@@ -100,8 +107,13 @@ public class GameBoard extends JPanel implements ActionListener {
 
 		timer = new Timer(400, this);
 		// timer.start();
-
+		
 		clearBoard();
+		
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void actionPerformed(ActionEvent e) {

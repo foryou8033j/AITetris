@@ -1,6 +1,7 @@
 package AITetris;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import AITetris.Model.Neo;
@@ -70,13 +71,15 @@ public class Tetris extends JFrame {
 
 		GameBoard board = new GameBoard(false, playMode, Player.Player1, (int) (getSize().getWidth() / 2) - (B_WIDTH_SIZE / 2),
 				20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
-
+		
 		KeyHandler keyHandler = new KeyHandler(this, playMode, board, null);
 
 		board.addKeyListener(keyHandler);
 
 		getContentPane().add(board);
 
+		board.setName(JOptionPane.showInputDialog(this, "이름을 입력 해 주세요", "Single", JOptionPane.PLAIN_MESSAGE));
+		
 		board.requestFocus();
 	}
 
@@ -100,6 +103,9 @@ public class Tetris extends JFrame {
 
 		getContentPane().add(board);
 		getContentPane().add(board2);
+		
+		board.setName(JOptionPane.showInputDialog(this, "첫번째 플레이어 이름을 입력 해 주세요", "Duo", JOptionPane.PLAIN_MESSAGE));
+		board2.setName(JOptionPane.showInputDialog(this, "두번째 플레이어 이름을 입력 해 주세요", "Duo", JOptionPane.PLAIN_MESSAGE));
 
 		board.requestFocus();
 		board2.requestFocus();
@@ -124,6 +130,9 @@ public class Tetris extends JFrame {
 		getContentPane().add(board);
 		getContentPane().add(board2);
 
+		board.setName(JOptionPane.showInputDialog(this, "이름을 입력 해 주세요", "AI", JOptionPane.PLAIN_MESSAGE));
+		board2.setName("NEO");
+		
 		board.requestFocus();
 		board2.requestFocus();
 
