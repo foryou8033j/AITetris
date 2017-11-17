@@ -130,8 +130,8 @@ public class Tetris extends JFrame {
 		getContentPane().add(board);
 		getContentPane().add(board2);
 
-		board.setName(JOptionPane.showInputDialog(this, "이름을 입력 해 주세요", "AI", JOptionPane.PLAIN_MESSAGE));
-		board2.setName("NEO");
+		//board.setName(JOptionPane.showInputDialog(this, "이름을 입력 해 주세요", "AI", JOptionPane.PLAIN_MESSAGE));
+		//board2.setName("NEO");
 		
 		board.requestFocus();
 		board2.requestFocus();

@@ -281,9 +281,72 @@ public class GameBoard extends JPanel implements ActionListener {
 	public void paint(Graphics g) {
 		super.paint(g);
 
+		//배경 라인을 그려준다.
+		drawGridLine(g);
+
+		//테트리미노들을 그려준다.
+		drawShapes(g);
+
+		// UI Draw 관련
+		if (!isStarted && !isOver)
+			drawHelpScreen(g);
+
+		if (isOver)
+			drawGameOverScreen(g);
+
+		if (isPaused && isStarted)
+			drawPauseScreen(g);
+
+		// 3개의 Tetromino 가 Drop 하기 전에는 HelpScreen 을 그려준다
+		if (numTetrominoDropCount < 3 && !isPaused && !isOver)
+			drawHelpScreen(g);
+
+		//네오 플레이 문구를 그려준다.
+		if (player.equals(Player.Neo) && !isOver)
+			drawStringCenterOfPanel(g, Color.GRAY, 16, "AI. NEO 가 플레이합니다", 260);
+
+		drawMessageFollowingAttack(g);
+
+		// Limit Line Draw
+		g.setColor(Color.RED);
+		g.drawLine(0, BoardHeight, (int) getSize().getWidth() - 100, BoardHeight);
+		
+		
+		g.setColor(Color.BLACK);
+		
+		infoBoard.repaint();
+
+	}
+	
+	/**
+	 * 배경 가이드 라인을 그려준다.
+	 * @param g
+	 */
+	private void drawGridLine(Graphics g) {
+		
 		Dimension size = getSize();
 		int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
-
+		
+		Color color = Color.LIGHT_GRAY;
+		g.setColor(color);
+		
+		//각 칸의 격자를 그린다.
+		//세로 라인을 그린다.
+		for(int i=1; i<BoardWidth; ++i) {
+			g.drawLine(i * squareWidth() , 1, i * squareWidth(), BoardHeight * squareHeight() -2);
+		}
+		
+		//가로 라인을 그린다
+		for(int i=1; i<BoardHeight; ++i) {
+			g.drawLine(1, i * squareHeight(), BoardWidth * squareWidth(), i * squareHeight());
+		}
+		
+	}
+	
+	private void drawShapes(Graphics g) {
+		Dimension size = getSize();
+		int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
+		
 		// 보드에 저장된 블럭을 그린다
 		for (int i = 0; i < BoardHeight; ++i) {
 			for (int j = 0; j < BoardWidth; ++j) {
@@ -305,33 +368,6 @@ public class GameBoard extends JPanel implements ActionListener {
 						curPiece.getShape());
 			}
 		}
-
-		// UI Draw 관련
-
-		if (!isStarted && !isOver)
-			drawHelpScreen(g);
-
-		if (isOver)
-			drawGameOverScreen(g);
-
-		if (isPaused && isStarted)
-			drawPauseScreen(g);
-
-		// 3개의 Tetromino 가 Drop 하기 전에는 HelpScreen 을 그려준다
-		if (numTetrominoDropCount < 3 && !isPaused && !isOver)
-			drawHelpScreen(g);
-
-		if (player.equals(Player.Neo) && !isOver)
-			drawStringCenterOfPanel(g, Color.GRAY, 16, "AI. NEO 가 플레이합니다", 260);
-
-		drawMessageFollowingAttack(g);
-
-		// Limit Line Draw
-		g.setColor(Color.RED);
-		g.drawLine(0, BoardHeight, (int) getSize().getWidth() - 100, BoardHeight);
-
-		infoBoard.repaint();
-
 	}
 
 	/**
