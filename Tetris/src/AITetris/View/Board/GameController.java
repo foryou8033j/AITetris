@@ -38,15 +38,22 @@ public class GameController extends Thread{
 			//승리 여부를 결정한다.
 			if(gameBoard1.isOver || gameBoard2.isOver) {
 				
+				//승패 여부 결정이 가능한 경우
 				if(gameBoard1.getPoint() > gameBoard2.getPoint()) {
 					gameBoard1.isWin = true;
-				}else {
+				}else if( gameBoard1.getPoint() < gameBoard2.getPoint() ){
 					gameBoard2.isWin = true;
+				}else {
+					gameBoard1.isWin = false;
+					gameBoard2.isWin = false;
+					gameBoard1.isDraw = true;
+					gameBoard2.isDraw = true;
 				}
+				
+				
 				gameBoard1.doQuitGame();
 				gameBoard2.doQuitGame();
 				
-				break;
 			}else{
 				
 				//게임 모드가 대전모드 일 경우
@@ -65,6 +72,9 @@ public class GameController extends Thread{
 						
 					}
 					
+				}
+				else {
+					//This is not a Competition
 				}
 			}
 			

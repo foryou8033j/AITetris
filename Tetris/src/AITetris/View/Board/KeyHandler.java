@@ -50,14 +50,10 @@ public class KeyHandler extends KeyAdapter {
     private void rotatePeace(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    board.tryMove(board.curPiece.rotateRight(), board.curX, board.curY);
-	    if (board.isGhost)
-		board.tryGhostPieceMove(board.ghostPiece.rotateRight(), board.ghostCurX, board.ghostCurY);
+		board.tryRotate();
 	}
 	if (player.equals(Player.Player2)) {
-	    board2.tryMove(board2.curPiece.rotateRight(), board2.curX, board2.curY);
-	    if (board2.isGhost)
-		board2.tryGhostPieceMove(board2.ghostPiece.rotateRight(), board2.ghostCurX, board2.ghostCurY);
+	    board2.tryRotate();
 	}
 
     }
