@@ -3,8 +3,6 @@ package AITetris.View.Board;
 import java.awt.AWTException;
 import java.awt.Robot;
 
-import AITetris.View.PlayerMode;
-
 public class GameController extends Thread{
 
 	private GameBoard gameBoard1;

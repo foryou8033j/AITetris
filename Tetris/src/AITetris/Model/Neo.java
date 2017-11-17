@@ -1,12 +1,15 @@
 package AITetris.Model;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 import AITetris.Model.NeoModel.CognitionModel;
@@ -23,6 +26,7 @@ public class Neo extends JPanel implements ActionListener {
 
 	private Tetrominoes[] board;
 	private Timer timer;
+	private boolean isDelayEnd = true;
 
 	// ObservableList<WeightModel> weightModel =
 	// FXCollections.observableArrayList();
@@ -33,8 +37,6 @@ public class Neo extends JPanel implements ActionListener {
 
 	private CognitionModel cognitionModel;
 	private DecisionModel decisionModel;
-	
-	private Graphics g;
 
 	public Neo(GameBoard gameBoard) {
 
@@ -53,7 +55,7 @@ public class Neo extends JPanel implements ActionListener {
 		cognitionModel = new CognitionModel();
 		decisionModel = new DecisionModel(this, gameBoard);
 
-		timer = new Timer(1, this);
+		timer = new Timer(200, this);
 		timer.start();
 
 	}
@@ -80,7 +82,7 @@ public class Neo extends JPanel implements ActionListener {
 		}
 	}
 
-	private void getBoard() {
+	private int[][] getBoard() {
 		this.board = gameBoard.getBoard();
 
 		decisionModel.clear();
@@ -109,33 +111,25 @@ public class Neo extends JPanel implements ActionListener {
 		// 가중치 연산
 		weightModel = cognitionModel.recognitionWeight(weightModel, BoardWidth, BoardHeight);
 
+		return weightModel;
 	}
 
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
 
-		getBoard();
 		drawPeace(g);
-		
-		
-		if (decisionModel != null) {
-			if (decisionModel.decisionEnd) {
-				if (decisionModel.thinkEnd)
-					//getBoard();
-					decisionModel.checkBoardWeight(g, weightModel);
-					// decisionModel.checkBoard(weightModel, BoardWidth);
 
-				if (decisionModel.thinkEnd && !decisionModel.moveEnd) {
-					decisionModel.decision(weightModel);
-				}
-			}
+		decisionModel.checkBoardWeight(g, getBoard());
+		
+		if(isDelayEnd) {
+			isDelayEnd = false;
+			if(decisionModel.decision(decisionModel.checkBoardWeight(g, getBoard())))
+				isDelayEnd = true;
 		}
-		
-		drawWeight(g);
-		
-		repaint();
 
+		drawWeight(g);
+		repaint();
 	}
 
 	// 블럭을 그린다
@@ -166,7 +160,7 @@ public class Neo extends JPanel implements ActionListener {
 	}
 
 	// 단일 블럭을 그린다
-	public  void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
+	public void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
 
 		if (shape != Tetrominoes.NoShape) {
 
@@ -206,10 +200,8 @@ public class Neo extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 
-		// getBoard();
-
+		isDelayEnd = !isDelayEnd;
 		
-
 	}
 
 }

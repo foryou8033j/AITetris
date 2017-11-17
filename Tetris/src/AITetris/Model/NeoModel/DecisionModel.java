@@ -1,15 +1,22 @@
 package AITetris.Model.NeoModel;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import AITetris.Model.Neo;
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Shape;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -39,7 +46,7 @@ public class DecisionModel {
 	int tmpX = 0;
 	int tmpY = 0;
 
-	ObservableList<WeightModel> weightModel = FXCollections.observableArrayList();
+	//ObservableList<WeightModel> weightModel = FXCollections.observableArrayList();
 
 	public DecisionModel(Neo neo, GameBoard gameBoard) {
 		this.neo = neo;
@@ -62,7 +69,7 @@ public class DecisionModel {
 		moveEnd = false;
 		decisionEnd = true;
 
-		weightModel.clear();
+		//weightModel.clear();
 	}
 
 	public boolean tryPieceMove(Shape newGhostPiece, int newX, int newY) {
@@ -80,7 +87,7 @@ public class DecisionModel {
 	@Deprecated
 	public void checkBoard(int[][] weightBoard, int BoardWidth) {
 
-		this.weightModel.clear();
+		//this.weightModel.clear();
 
 		thinkEnd = false;
 		decisionEnd = false;
@@ -175,7 +182,7 @@ public class DecisionModel {
 					e.printStackTrace();
 				}
 
-				this.weightModel.add(new WeightModel(tmpX, tmpY, weightSum, tmpShape));
+				//this.weightModel.add(new WeightModel(tmpX, tmpY, weightSum, tmpShape));
 
 				System.out.println(" = " + weightSum + " rotation " + rotation);
 
@@ -195,9 +202,12 @@ public class DecisionModel {
 	}
 
 	// 각 좌표에 대한 테트리미노의 가중치를 연산한다.
-	public void checkBoardWeight(Graphics g, int[][] weightBoard) {
+	public ObservableList<WeightModel> checkBoardWeight(Graphics g, int[][] weightBoard) {
 
-		this.weightModel.clear();
+		
+		
+		ObservableList<WeightModel> weightModel = FXCollections.observableArrayList();
+		weightModel.clear();
 
 		thinkEnd = false;
 		decisionEnd = false;
@@ -211,7 +221,7 @@ public class DecisionModel {
 		while (tmpX < gameBoard.BoardWidth) {
 
 			// 가상 블럭이 현재 좌표 기준 좌측일때의 가중치 연산
-			getTetriminoWeight(g, tmpShape, tmpX, weightBoard);
+			getTetriminoWeight(g, tmpShape, tmpX, weightBoard, weightModel);
 
 			tmpX++;
 
@@ -220,10 +230,12 @@ public class DecisionModel {
 		gameBoard.repaint();
 
 		thinkEnd = true;
+		
+		return weightModel;
 
 	}
 
-	private void getTetriminoWeight(Graphics g, Shape shape, int x, int[][] boardWeight) {
+	private void getTetriminoWeight(Graphics g, Shape shape, int x, int[][] boardWeight, ObservableList<WeightModel> weightModel) {
 
 		tmpShape = null;
 
@@ -234,11 +246,12 @@ public class DecisionModel {
 			e.printStackTrace();
 		}
 
-		//g.setColor(new Color(new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255)));
+		// g.setColor(new Color(new Random().nextInt(255), new Random().nextInt(255),
+		// new Random().nextInt(255)));
 		for (int rotate = 0; rotate < 4; rotate++) {
-			
+
 			Color color = Color.BLACK;
-			
+
 			switch (rotate) {
 			case 0:
 				color = Color.RED;
@@ -253,9 +266,8 @@ public class DecisionModel {
 				color = Color.YELLOW;
 				break;
 			}
-			
+
 			g.setColor(color);
-			
 
 			// 블럭이 놓였다고 가정할때의 가중치 재연산을 위해 기존 가중치값을 복사한다.
 			int[][] tmpWeightBoard = new int[gameBoard.BoardWidth][gameBoard.BoardHeight];
@@ -292,19 +304,23 @@ public class DecisionModel {
 					int drawY = tmpY - tmpShape.y(i);
 
 					g.setColor(g.getColor().darker());
-					g.fillRect((10 + drawX * neo.squareWidth()) + 1, ((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight()) + 1, neo.squareWidth() - 2, neo.squareHeight() - 2);
-					
+					g.fillRect((10 + drawX * neo.squareWidth()) + 1,
+							((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight()) + 1, neo.squareWidth() - 2,
+							neo.squareHeight() - 2);
+
 					int sideX = (10 + drawX * neo.squareWidth());
 					int sideY = ((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight());
-					
+
 					g.setColor(color);
 					g.drawLine(sideX, sideY + neo.squareHeight() - 1, sideX, sideY);
 					g.drawLine(sideX, sideY, sideX + neo.squareWidth() - 1, sideY);
 
 					g.setColor(color);
-					g.drawLine(sideX + 1, sideY + neo.squareHeight() - 1, sideX + neo.squareWidth() - 1, sideY + neo.squareHeight() - 1);
-					g.drawLine(sideX + neo.squareWidth() - 1, sideY + neo.squareHeight() - 1, sideX + neo.squareWidth() - 1, sideY + 1);
-					
+					g.drawLine(sideX + 1, sideY + neo.squareHeight() - 1, sideX + neo.squareWidth() - 1,
+							sideY + neo.squareHeight() - 1);
+					g.drawLine(sideX + neo.squareWidth() - 1, sideY + neo.squareHeight() - 1,
+							sideX + neo.squareWidth() - 1, sideY + 1);
+
 				}
 			}
 
@@ -349,20 +365,20 @@ public class DecisionModel {
 
 					int belowBlocks = 0;
 
-					for (int h = tmpY - tmpShape.y(i) -1; h >= 0; --h) {
+					for (int h = tmpY - tmpShape.y(i) - 1; h >= 0; --h) {
 
 						if (belowBlocks > 2)
 							break;
-						
+
 						if (tmpWeightBoard[tmpX + tmpShape.x(i)][h] != -1)
 							voidCellBelowBlock++;
 						else
 							break;
-						
+
 						belowBlocks++;
 
 					}
-					
+
 					weightSum -= voidCellBelowBlock * 70;
 					if (voidCellBelowBlock > 0)
 						voidCellMadeBlock++;
@@ -389,28 +405,28 @@ public class DecisionModel {
 
 			Font tmpFont = g.getFont();
 			Font small = new Font("Helvetica", Font.BOLD, 14);
-			//FontMetrics metr = getFontMetrics(small);
+			// FontMetrics metr = getFontMetrics(small);
 			g.setFont(small);
 			g.setColor(Color.BLACK);
-			g.drawString(String.valueOf(weightSum), (10 + drawX * neo.squareWidth()) + 1, ((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight()) + 1);
-			
+			g.drawString(String.valueOf(weightSum), (10 + drawX * neo.squareWidth()) + 1,
+					((gameBoard.BoardHeight - drawY - 1) * neo.squareHeight()) + 1);
+
 			g.setFont(tmpFont);
-			//g.fillRect(, , neo.squareWidth() - 2, neo.squareHeight() - 2);
-			
-			
+			// g.fillRect(, , neo.squareWidth() - 2, neo.squareHeight() - 2);
+
 			// 현재 구해진 가중치값을 가중치모델에 추가한다.
 			try {
-				
+
 				int mostHigherWeight = 0;
-				
-				for(WeightModel model:this.weightModel) {
-					if(model.getWeight() > mostHigherWeight)
+
+				for (WeightModel model : weightModel) {
+					if (model.getWeight() > mostHigherWeight)
 						mostHigherWeight = model.getWeight();
 				}
-				
-				if(mostHigherWeight < weightSum)
-					this.weightModel.add(new WeightModel(tmpX, gameBoard.curY, weightSum, (Shape) tmpShape.clone()));
-				
+
+				if (mostHigherWeight < weightSum)
+					weightModel.add(new WeightModel(tmpX, gameBoard.curY, weightSum, (Shape) tmpShape.clone()));
+
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}
@@ -421,25 +437,25 @@ public class DecisionModel {
 
 	}
 
-	public boolean decision(int[][] weightBoard) {
+	WeightModel selectedModel = null;
 
-		moveEnd = true;
+	public boolean decision(ObservableList<WeightModel> weightModel) {
+
+		moveEnd = false;
 
 		int higherWeight = 0;
-		int higherIndex = 0;
 
-		int lessVoidCell = 0;
-		int underLessVoidCell = 0;
+		selectedModel = null;
 
 		// 최고 가중치 모델을 찾는다
 		for (int i = 0; i < weightModel.size(); i++) {
 			if (higherWeight <= weightModel.get(i).getWeight()) {
 				higherWeight = weightModel.get(i).getWeight();
-				higherIndex = i;
+				selectedModel = weightModel.get(i);
 			}
 		}
-		
-		if(weightModel.size()==0) {
+
+		if (weightModel.size() == 0 || selectedModel == null) {
 			weightModel.clear();
 			moveEnd = false;
 			return true;
@@ -448,9 +464,8 @@ public class DecisionModel {
 		// 최고 가중치 형태로 블럭을 회전한다.
 		// 최고 가중치의 Shape 를 받아온다.
 		try {
-			gameBoard.curPiece = (Shape) weightModel.get(higherIndex).getShape().clone();
+			gameBoard.curPiece = (Shape) selectedModel.getShape().clone();
 		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
 			weightModel.clear();
 			moveEnd = false;
 			e.printStackTrace();
@@ -474,36 +489,46 @@ public class DecisionModel {
 			}
 		}
 
-		while (true) {
+		new Timer(100, new ActionListener() {
 
-			System.out.println("current X : " + gameBoard.curX);
-			System.out.println("Higher X : " + higherIndex);
-			System.out.println("Higher Data : " + higherIndex + " " + weightModel.get(higherIndex).getWeight());
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("current X : " + gameBoard.curX);
+				System.out.println("Higher X : " + selectedModel.getX());
+				System.out.println("Higher Data : " + selectedModel.weight);
 
-			if (gameBoard.curX > weightModel.get(higherIndex).getX()) {
-				System.out.println("MOVE LEFT");
-				if (!controlModel.moveLeft())
-					break;
+				if (gameBoard.curX > selectedModel.getX()) {
+					System.out.println("MOVE LEFT");
+					if (!controlModel.moveLeft()) {
+						Timer t = (Timer) e.getSource();
+						t.stop();
+					}
 
-			} else if (gameBoard.curX < weightModel.get(higherIndex).getX()) {
-				System.out.println("MOVE RIGHT");
-				if (!controlModel.moveRight())
-					break;
-			} else {
-				break;
+				} else if (gameBoard.curX < selectedModel.getX()) {
+					System.out.println("MOVE RIGHT");
+					if (!controlModel.moveRight()) {
+						Timer t = (Timer) e.getSource();
+						t.stop();
+					}
+					
+					
+				} else {
+
+					if (!controlModel.moveDown()) {
+						Timer t = (Timer) e.getSource();
+						t.stop();
+						weightModel.clear();
+						moveEnd = true;
+					}
+
+				}
 			}
-
-		}
-
-		while (true) {
-			if (!controlModel.moveDown())
-				break;
-		}
-
-		weightModel.clear();
-		moveEnd = false;
-
-		return true;
+		}).start();
+		
+		if(moveEnd)
+			return true;
+		
+		return false;
 	}
 
 }
