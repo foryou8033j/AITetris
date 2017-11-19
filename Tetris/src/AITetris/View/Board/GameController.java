@@ -36,7 +36,7 @@ public class GameController extends Thread{
 			//승리 여부를 결정한다.
 			if(gameBoard1.isOver || gameBoard2.isOver) {
 				
-				//승패 여부 결정이 가능한 경우
+				/*//승패 여부 결정이 가능한 경우
 				if(gameBoard1.getPoint() > gameBoard2.getPoint()) {
 					gameBoard1.isWin = true;
 				}else if( gameBoard1.getPoint() < gameBoard2.getPoint() ){
@@ -50,7 +50,7 @@ public class GameController extends Thread{
 				
 				
 				gameBoard1.doQuitGame();
-				gameBoard2.doQuitGame();
+				gameBoard2.doQuitGame();*/
 				
 			}else{
 				

@@ -11,7 +11,10 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import AITetris.Tetris;
+import AITetris.Util.MusicPlayer;
 import AITetris.Util.String.StringPadding;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 /**
  * 타이틀 메뉴를 그려주는 패널 클래스
@@ -25,7 +28,7 @@ public class Title extends JPanel {
 
     int curPoint = 0;
     int minPoint = 0;
-    int maxPoint = 4;
+    int maxPoint = 5;
     
     boolean duoCompetition = false;
     boolean aiCompetition = false;
@@ -44,6 +47,9 @@ public class Title extends JPanel {
 
 	setBorder(BorderFactory.createLineBorder(Color.black));
 	setFocusable(true);
+	
+	new MusicPlayer(tetris.getProperties()).play();
+	
 
 	keyHandler = new KeyAdapter() {
 	    @Override
@@ -117,6 +123,9 @@ public class Title extends JPanel {
 			    	case 3:
 			    		break;
 			    	case 4:
+			    	    	tetris.initOption();
+			    		break;
+			    	case 5:
 			    		isQuitQuestion = true;
 			    		break;
 			    	}
@@ -140,6 +149,7 @@ public class Title extends JPanel {
 	removeKeyListener(keyHandler);
 	keyHandler = null;
 	
+	tetris.getContentPane().setLayout(null);
 	tetris.getContentPane().removeAll();
 	tetris.getContentPane().repaint();
 	
@@ -181,26 +191,31 @@ public class Title extends JPanel {
     private void drawMenues(Graphics g) {
 	Color color = Color.BLACK;
 
+	int firstLine = 320;
+	
 	color = (curPoint == 0 ? Color.RED : Color.BLACK);
-	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Single", 14, " "), 360);
+	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Single", 14, " "), firstLine);
 
 	color = (curPoint == 1 ? Color.RED : Color.BLACK);
 	if(duoCompetition)
-	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("◀ Human VS Human Competition", 15, " "), 400);
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("◀ Human VS Human Competition", 15, " "), firstLine+=40);
 	else
-	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Human ▶", 15, " "), 400);
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Human ▶", 15, " "), firstLine+=40);
 
 	color = (curPoint == 2 ? Color.RED : Color.BLACK);
 	if(aiCompetition)
-	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("◀ Human VS Neo Competition", 15, " "), 440);
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("◀ Human VS Neo Competition", 15, " "), firstLine+=40);
 	else
-	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Neo ▶", 15, " "), 440);
+	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Neo ▶", 15, " "), firstLine+=40);
 
 	color = (curPoint == 3 ? Color.RED : Color.BLACK);
-	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Help", 14, " "), 480);
-
+	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Help", 14, " "), firstLine+=40);
+	
 	color = (curPoint == 4 ? Color.RED : Color.BLACK);
-	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Exit", 14, " "), 520);
+	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Option", 14, " "), firstLine+=40);
+
+	color = (curPoint == 5 ? Color.RED : Color.BLACK);
+	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Exit", 14, " "), firstLine+=40);
 
     }
 

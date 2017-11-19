@@ -1,18 +1,17 @@
 package AITetris.Model;
 
-import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
+import AITetris.Tetris;
 import AITetris.Model.NeoModel.CognitionModel;
+import AITetris.Model.NeoModel.ControlModel;
 import AITetris.Model.NeoModel.DecisionModel;
 import AITetris.View.Board.GameBoard;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
@@ -37,13 +36,17 @@ public class Neo extends JPanel implements ActionListener {
 
 	private CognitionModel cognitionModel;
 	private DecisionModel decisionModel;
+	private ControlModel controlModel;
+	
+	public Properties properties;
 
-	public Neo(GameBoard gameBoard) {
+	public Neo(Properties properties, GameBoard gameBoard) {
 
 		setLayout(null);
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
 		setFocusable(false);
 
+		this.properties = properties;
 		this.gameBoard = gameBoard;
 		this.board = gameBoard.getBoard();
 
@@ -52,8 +55,10 @@ public class Neo extends JPanel implements ActionListener {
 
 		weightModel = new int[BoardWidth][BoardHeight];
 
-		cognitionModel = new CognitionModel();
-		decisionModel = new DecisionModel(this, gameBoard);
+		
+		controlModel = new ControlModel(gameBoard);
+		cognitionModel = new CognitionModel(gameBoard, this);
+		decisionModel = new DecisionModel(gameBoard, controlModel);
 
 		timer = new Timer(200, this);
 		timer.start();
@@ -120,11 +125,11 @@ public class Neo extends JPanel implements ActionListener {
 
 		drawPeace(g);
 
-		decisionModel.checkBoardWeight(g, getBoard());
+		cognitionModel.checkBoardWeight(g, getBoard());
 		
 		if(isDelayEnd) {
 			isDelayEnd = false;
-			if(decisionModel.decision(decisionModel.checkBoardWeight(g, getBoard())))
+			if(decisionModel.decision(cognitionModel.checkBoardWeight(g, getBoard())))
 				isDelayEnd = true;
 		}
 

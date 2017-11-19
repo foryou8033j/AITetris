@@ -14,6 +14,8 @@ public class ControlModel {
     public ControlModel(GameBoard gameBoard) {
 	this.gameBoard = gameBoard;
 	
+	
+	System.out.println("조작 모델 초기화");
     }
     
     public boolean  moveLeft() {
