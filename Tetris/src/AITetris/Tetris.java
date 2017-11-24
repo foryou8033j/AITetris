@@ -8,6 +8,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import AITetris.Model.Neo;
 import AITetris.Model.Properties;
+import AITetris.Util.RankDBController;
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 import AITetris.View.Board.GameBoard;
@@ -33,12 +34,14 @@ public class Tetris extends JFrame {
 
     private Title title;
     private Properties properties = null;
+    private RankDBController rankDBController = null;
 
     public Tetris() {
 
 	super();
 	
 	properties = new Properties();
+	rankDBController = new RankDBController();
 
 	setTitle("AITetris");
 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,7 +101,7 @@ public class Tetris extends JFrame {
 
 	PlayerMode playMode = PlayerMode.Single;
 
-	GameBoard board = new GameBoard(false, playMode, Player.Player1,
+	GameBoard board = new GameBoard(this, false, playMode, Player.Player1,
 		(int) (getSize().getWidth() / 2) - (B_WIDTH_SIZE / 2), 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 	KeyHandler keyHandler = new KeyHandler(this, playMode, board, null);
@@ -116,9 +119,9 @@ public class Tetris extends JFrame {
 
 	PlayerMode playMode = PlayerMode.Duo;
 
-	GameBoard board = new GameBoard(competitionMode, playMode, Player.Player1, 20 + B_WIDTH_SIZE / 2, 20,
+	GameBoard board = new GameBoard(this, competitionMode, playMode, Player.Player1, 20 + B_WIDTH_SIZE / 2, 20,
 		B_WIDTH_SIZE, B_HEIGHT_SIZE);
-	GameBoard board2 = new GameBoard(competitionMode, playMode, Player.Player2,
+	GameBoard board2 = new GameBoard(this, competitionMode, playMode, Player.Player2,
 		20 + B_WIDTH_SIZE / 2 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 	KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
@@ -141,8 +144,8 @@ public class Tetris extends JFrame {
 
 	PlayerMode playMode = PlayerMode.AI;
 
-	GameBoard board = new GameBoard(competitionMode, playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
-	GameBoard board2 = new GameBoard(competitionMode, playMode, Player.Neo, 20 + B_WIDTH_SIZE + 20, 20,
+	GameBoard board = new GameBoard(this, competitionMode, playMode, Player.Player1, 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
+	GameBoard board2 = new GameBoard(this, competitionMode, playMode, Player.Neo, 20 + B_WIDTH_SIZE + 20, 20,
 		B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
 	KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
@@ -184,6 +187,10 @@ public class Tetris extends JFrame {
      */
     public Properties getProperties() {
 	return properties;
+    }
+    
+    public RankDBController getDB() {
+    	return rankDBController;
     }
 
     public static void main(String[] args) {

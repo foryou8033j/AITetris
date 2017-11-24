@@ -16,16 +16,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import com.sun.java.swing.SwingUtilities3;
-
+import AITetris.Tetris;
+import AITetris.Model.Rank;
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 import AITetris.View.Board.Tetrimino.Shape;
 import AITetris.View.Board.Tetrimino.Tetrominoes;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Dialog;
 
 /**
  * 테트리스의 게임 보드를 보여주는 패널
@@ -73,6 +69,7 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	private Tetrominoes[] board;
 
+	private Tetris tetris;
 	private InfoBoard infoBoard;
 
 	long curTime;
@@ -84,8 +81,10 @@ public class GameBoard extends JPanel implements ActionListener {
 	PlayerMode playMode;
 	Player player;
 
-	public GameBoard(boolean isCompetition, PlayerMode playMode, Player player, int x, int y, int width, int height) {
+	public GameBoard(Tetris tetris, boolean isCompetition, PlayerMode playMode, Player player, int x, int y, int width, int height) {
 
+		this.tetris = tetris;
+		
 		this.playMode = playMode;
 		this.player = player;
 		this.isCompetition = isCompetition;
@@ -906,6 +905,10 @@ public class GameBoard extends JPanel implements ActionListener {
 		
 		String name = JOptionPane.showInputDialog(this, "등록 할 이름을 입력 해 주세요.", player.name(),
 				JOptionPane.INFORMATION_MESSAGE);
+		
+		if(!name.equals("")) {
+			tetris.getDB().insertRank(new Rank(name, playMode.toString(), getPoint()));
+		}
 
 	}
 
