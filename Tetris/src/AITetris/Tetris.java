@@ -107,8 +107,6 @@ public class Tetris extends JFrame {
 
 	getContentPane().add(board);
 
-	board.setName(JOptionPane.showInputDialog(this, "이름을 입력 해 주세요", "Single", JOptionPane.PLAIN_MESSAGE));
-
 	board.requestFocus();
     }
 
@@ -133,9 +131,6 @@ public class Tetris extends JFrame {
 	getContentPane().add(board);
 	getContentPane().add(board2);
 
-	board.setName(JOptionPane.showInputDialog(this, "첫번째 플레이어 이름을 입력 해 주세요", "Duo", JOptionPane.PLAIN_MESSAGE));
-	board2.setName(JOptionPane.showInputDialog(this, "두번째 플레이어 이름을 입력 해 주세요", "Duo", JOptionPane.PLAIN_MESSAGE));
-
 	board.requestFocus();
 	board2.requestFocus();
     }
@@ -159,10 +154,6 @@ public class Tetris extends JFrame {
 
 	getContentPane().add(board);
 	getContentPane().add(board2);
-
-	// board.setName(JOptionPane.showInputDialog(this, "이름을 입력 해 주세요", "AI",
-	// JOptionPane.PLAIN_MESSAGE));
-	// board2.setName("NEO");
 
 	board.requestFocus();
 	board2.requestFocus();

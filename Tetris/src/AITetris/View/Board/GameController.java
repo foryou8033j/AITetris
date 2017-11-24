@@ -5,11 +5,13 @@ import java.awt.Robot;
 
 public class GameController extends Thread{
 
+
 	private GameBoard gameBoard1;
 	private GameBoard gameBoard2;
 	
 	public GameController(GameBoard gameBoard1, GameBoard gameBoard2) {
 		
+
 		this.gameBoard1 = gameBoard1;
 		this.gameBoard2 = gameBoard2;
 		
@@ -36,21 +38,20 @@ public class GameController extends Thread{
 			//승리 여부를 결정한다.
 			if(gameBoard1.isOver || gameBoard2.isOver) {
 				
-				/*//승패 여부 결정이 가능한 경우
+				//승패 여부 결정이 가능한 경우
 				if(gameBoard1.getPoint() > gameBoard2.getPoint()) {
 					gameBoard1.isWin = true;
 				}else if( gameBoard1.getPoint() < gameBoard2.getPoint() ){
 					gameBoard2.isWin = true;
-				}else {
+				}else {	//무승부인경우
 					gameBoard1.isWin = false;
 					gameBoard2.isWin = false;
 					gameBoard1.isDraw = true;
 					gameBoard2.isDraw = true;
 				}
 				
-				
 				gameBoard1.doQuitGame();
-				gameBoard2.doQuitGame();*/
+				gameBoard2.doQuitGame();
 				
 			}else{
 				

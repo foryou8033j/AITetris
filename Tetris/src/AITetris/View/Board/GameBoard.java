@@ -47,6 +47,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	boolean isOver = false;
 	boolean isWin = false;
 	boolean isDraw = false;
+	boolean isRanked = false;
 	boolean isCompetition = false;
 	boolean isCrazyKeyboard = false;
 	boolean isAttack = false;
@@ -77,7 +78,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	long curTime;
 	long defTime;
 	long pauseTime;
-	
+
 	private String name = "NULL";
 
 	PlayerMode playMode;
@@ -107,11 +108,11 @@ public class GameBoard extends JPanel implements ActionListener {
 
 		timer = new Timer(400, this);
 		// timer.start();
-		
+
 		clearBoard();
-		
+
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -236,15 +237,17 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	public boolean tryRotate() {
 
-		if(!tryMove(curPiece.rotateRight(), curX, curY)) {
-			
-			if(curX < BoardWidth/2) {
-				while(!tryMove(curPiece.rotateRight(), curX++, curY));
-			}else {
-				while(!tryMove(curPiece.rotateRight(), curX--, curY));
+		if (!tryMove(curPiece.rotateRight(), curX, curY)) {
+
+			if (curX < BoardWidth / 2) {
+				while (!tryMove(curPiece.rotateRight(), curX++, curY))
+					;
+			} else {
+				while (!tryMove(curPiece.rotateRight(), curX--, curY))
+					;
 			}
-			
-		}else {
+
+		} else {
 			if (isGhost)
 				tryGhostPieceMove(ghostPiece.rotateRight(), ghostCurX, ghostCurY);
 		}
@@ -281,10 +284,10 @@ public class GameBoard extends JPanel implements ActionListener {
 	public void paint(Graphics g) {
 		super.paint(g);
 
-		//배경 라인을 그려준다.
+		// 배경 라인을 그려준다.
 		drawGridLine(g);
 
-		//테트리미노들을 그려준다.
+		// 테트리미노들을 그려준다.
 		drawShapes(g);
 
 		// UI Draw 관련
@@ -301,7 +304,7 @@ public class GameBoard extends JPanel implements ActionListener {
 		if (numTetrominoDropCount < 3 && !isPaused && !isOver)
 			drawHelpScreen(g);
 
-		//네오 플레이 문구를 그려준다.
+		// 네오 플레이 문구를 그려준다.
 		if (player.equals(Player.Neo) && !isOver)
 			drawStringCenterOfPanel(g, Color.GRAY, 16, "AI. NEO 가 플레이합니다", 260);
 
@@ -310,43 +313,43 @@ public class GameBoard extends JPanel implements ActionListener {
 		// Limit Line Draw
 		g.setColor(Color.RED);
 		g.drawLine(0, BoardHeight, (int) getSize().getWidth() - 100, BoardHeight);
-		
-		
+
 		g.setColor(Color.BLACK);
-		
+
 		infoBoard.repaint();
 
 	}
-	
+
 	/**
 	 * 배경 가이드 라인을 그려준다.
+	 * 
 	 * @param g
 	 */
 	private void drawGridLine(Graphics g) {
-		
+
 		Dimension size = getSize();
 		int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
-		
+
 		Color color = Color.LIGHT_GRAY;
 		g.setColor(color);
-		
-		//각 칸의 격자를 그린다.
-		//세로 라인을 그린다.
-		for(int i=1; i<BoardWidth; ++i) {
-			g.drawLine(i * squareWidth() , 1, i * squareWidth(), BoardHeight * squareHeight() -2);
+
+		// 각 칸의 격자를 그린다.
+		// 세로 라인을 그린다.
+		for (int i = 1; i < BoardWidth; ++i) {
+			g.drawLine(i * squareWidth(), 1, i * squareWidth(), BoardHeight * squareHeight() - 2);
 		}
-		
-		//가로 라인을 그린다
-		for(int i=1; i<BoardHeight; ++i) {
+
+		// 가로 라인을 그린다
+		for (int i = 1; i < BoardHeight; ++i) {
 			g.drawLine(1, i * squareHeight(), BoardWidth * squareWidth(), i * squareHeight());
 		}
-		
+
 	}
-	
+
 	private void drawShapes(Graphics g) {
 		Dimension size = getSize();
 		int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
-		
+
 		// 보드에 저장된 블럭을 그린다
 		for (int i = 0; i < BoardHeight; ++i) {
 			for (int j = 0; j < BoardWidth; ++j) {
@@ -383,18 +386,17 @@ public class GameBoard extends JPanel implements ActionListener {
 		int line = 150;
 
 		if (playMode.equals(PlayerMode.Duo) || playMode.equals(PlayerMode.AI)) {
-			if(isDraw && !isWin) {
-			
+			if (isDraw && !isWin) {
+
 				drawStringCenterOfPanel(g, Color.RED, 36, "DRAW!", line - metr.getHeight() * 2);
-				
+
 			}
 			if (isWin && !isDraw) {
 				if (player.equals(Player.Neo))
 					drawStringCenterOfPanel(g, Color.RED, 36, "NEO WIN!", line - metr.getHeight() * 2);
 				else
 					drawStringCenterOfPanel(g, Color.RED, 36, "YOU WIN!", line - metr.getHeight() * 2);
-			}
-			else if(!isWin && !isDraw){
+			} else if (!isWin && !isDraw) {
 
 				if (player.equals(Player.Neo))
 					drawStringCenterOfPanel(g, Color.RED, 36, "NEO LOSE", line - metr.getHeight() * 2);
@@ -409,8 +411,11 @@ public class GameBoard extends JPanel implements ActionListener {
 		else
 			drawStringCenterOfPanel(g, Color.RED, 24, "GAME OVER", line);
 
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'ENTER' To Restart", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'Q' Back To Title", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 다시시작", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[Q] 타이틀로 돌아가기", line += metr.getHeight());
+
+		if ((!isRanked && !player.equals(Player.Neo)) && isWin || playMode.equals(PlayerMode.Single))
+			drawStringCenterOfPanel(g, Color.BLACK, 16, "[G] 랭킹 등록", line += metr.getHeight());
 
 		line += 80;
 
@@ -456,14 +461,15 @@ public class GameBoard extends JPanel implements ActionListener {
 				drawStringCenterOfPanel(g, Color.RED, 24, "START ORDER", 100 + metr.getHeight() * 2);
 			} else {
 				drawStringCenterOfPanel(g, Color.RED, 24, "WAIT START", 100 + metr.getHeight());
-				drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'ENTER' To Start", 100 + metr.getHeight() * 2);
-				drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'Q' Back To Title", 100 + metr.getHeight() * 3);
+				drawStringCenterOfPanel(g, Color.BLACK, 16, "[ENTER] 를 눌러 게임 시작", 100 + metr.getHeight() * 2);
+				drawStringCenterOfPanel(g, Color.BLACK, 16, "[Q] 타이틀로 돌아가기", 100 + metr.getHeight() * 3);
 			}
 
 			color = Color.BLACK;
 		}
 
-		if (playMode.equals(PlayerMode.Single)) {
+		if (playMode.equals(PlayerMode.Single) || playMode.equals(PlayerMode.AI)
+				|| playMode.equals(PlayerMode.AI_Competition)) {
 
 			if (player.equals(Player.Player1)) {
 				drawStringCenterOfPanel(g, color, 16, "[방향키 ▲] 블럭 회전", line += metr.getHeight());
@@ -476,7 +482,7 @@ public class GameBoard extends JPanel implements ActionListener {
 				drawStringCenterOfPanel(g, color, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
 			}
 
-		} else if (playMode.equals(PlayerMode.Duo)) {
+		} else if (playMode.equals(PlayerMode.Duo) || playMode.equals(PlayerMode.Duo_Competition)) {
 
 			if (player.equals(Player.Player1)) {
 				drawStringCenterOfPanel(g, color, 16, "[I] 블럭 회전", line += metr.getHeight());
@@ -515,8 +521,8 @@ public class GameBoard extends JPanel implements ActionListener {
 
 		drawStringCenterOfPanel(g, Color.RED, 24, "PAUSE", line += metr.getHeight());
 
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'ESC' or 'P' To Restart", line += metr.getHeight());
-		drawStringCenterOfPanel(g, Color.BLACK, 16, "Press 'Q' Back To Title", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[ESC][P] 게임 복귀", line += metr.getHeight());
+		drawStringCenterOfPanel(g, Color.BLACK, 16, "[Q] 타이틀로 돌아가기", line += metr.getHeight());
 
 		line += 80;
 
@@ -894,6 +900,13 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	public Tetrominoes[] getBoard() {
 		return board;
+	}
+
+	public void joinRank() {
+		
+		String name = JOptionPane.showInputDialog(this, "등록 할 이름을 입력 해 주세요.", player.name(),
+				JOptionPane.INFORMATION_MESSAGE);
+
 	}
 
 }

@@ -48,7 +48,7 @@ public class Title extends JPanel {
 	setBorder(BorderFactory.createLineBorder(Color.black));
 	setFocusable(true);
 	
-	new MusicPlayer(tetris.getProperties()).play();
+	//new MusicPlayer(tetris.getProperties()).play();
 	
 
 	keyHandler = new KeyAdapter() {
@@ -209,7 +209,7 @@ public class Title extends JPanel {
 	    drawStringCenterOfPanel(g, color, 16, StringPadding.getRPad("Human VS Neo ▶", 15, " "), firstLine+=40);
 
 	color = (curPoint == 3 ? Color.RED : Color.BLACK);
-	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Help", 14, " "), firstLine+=40);
+	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Ranking", 14, " "), firstLine+=40);
 	
 	color = (curPoint == 4 ? Color.RED : Color.BLACK);
 	drawStringCenterOfPanel(g, color, 16, StringPadding.getCPad("Option", 14, " "), firstLine+=40);
