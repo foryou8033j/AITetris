@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.BorderFactory;
@@ -81,10 +82,11 @@ public class GameBoard extends JPanel implements ActionListener {
 	PlayerMode playMode;
 	Player player;
 
-	public GameBoard(Tetris tetris, boolean isCompetition, PlayerMode playMode, Player player, int x, int y, int width, int height) {
+	public GameBoard(Tetris tetris, boolean isCompetition, PlayerMode playMode, Player player, int x, int y, int width,
+			int height) {
 
 		this.tetris = tetris;
-		
+
 		this.playMode = playMode;
 		this.player = player;
 		this.isCompetition = isCompetition;
@@ -168,6 +170,7 @@ public class GameBoard extends JPanel implements ActionListener {
 			curTime = System.currentTimeMillis();
 			defTime = System.currentTimeMillis() + 600000;
 
+			isRanked = false;
 			isStarted = true;
 			isOver = false;
 			isFallingFinished = false;
@@ -903,13 +906,36 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	public void joinRank() {
 		
-		String name = JOptionPane.showInputDialog(this, "등록 할 이름을 입력 해 주세요.", player.name(),
-				JOptionPane.INFORMATION_MESSAGE);
-		
-		if(!name.equals("")) {
-			tetris.getDB().insertRank(new Rank(name, playMode.toString(), getPoint()));
+		if(isRanked) return;
+
+		List<Rank> list = tetris.getDB().selectAll();
+
+		for (Rank item : list) {
+			if (item.getPoint() > getPoint()) {
+				JOptionPane.showConfirmDialog(this, "점수가 낮아 랭킹에 등록 할 수 없습니다.", "등록 실패", JOptionPane.WARNING_MESSAGE,
+						JOptionPane.OK_OPTION);
+				isRanked = true;
+				return;
+			}
 		}
 
+		while(!isRanked) {
+			String name = JOptionPane.showInputDialog(this, "등록 할 이름을 입력 해 주세요.", player.name(),
+					JOptionPane.INFORMATION_MESSAGE);
+
+			
+			
+			if (!name.equals("")) {
+				tetris.getDB().insertRank(new Rank(name, playMode.toString(), getPoint()));
+				
+				isRanked = true;
+				
+			}else {
+				JOptionPane.showConfirmDialog(this, "올바른 이름을 입력 해 주세요.", "등록 실패", JOptionPane.WARNING_MESSAGE,
+						JOptionPane.OK_OPTION);
+			}
+		}
+		
 	}
 
 }

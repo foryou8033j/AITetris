@@ -121,9 +121,10 @@ public class Title extends JPanel {
 			    		tetris.initNeo(aiCompetition);
 			    		break;
 			    	case 3:
+			    		tetris.initRanking();
 			    		break;
 			    	case 4:
-			    	    	tetris.initOption();
+			    	    tetris.initOption();
 			    		break;
 			    	case 5:
 			    		isQuitQuestion = true;

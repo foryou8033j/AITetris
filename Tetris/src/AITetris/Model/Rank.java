@@ -28,4 +28,5 @@ public class Rank {
 	public String toString() {
 		return "Rank [name=" +name + ", type=" + type + ", point=" + point;
 	}
+	
 }
