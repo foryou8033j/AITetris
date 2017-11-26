@@ -50,11 +50,10 @@ public class OptionPanel extends JPanel {
 		    else
 			curPoint = 0;
 		    break;
-		    
+
 		case KeyEvent.VK_LEFT:
-		    
-		    
-		    switch(curPoint) {
+
+		    switch (curPoint) {
 		    case 0:
 			properties.masterVolumeDown();
 			break;
@@ -65,35 +64,42 @@ public class OptionPanel extends JPanel {
 			properties.effectVolumeDown();
 			break;
 		    case 3:
-			properties.blockDownWeight -= 10;
+			if (properties.blockDownWeight - 10 >= -1000)
+			    properties.blockDownWeight -= 10;
 			break;
 		    case 4:
-			properties.bottomCellsWeight -= 10;
+			if (properties.bottomCellsWeight - 10 >= -1000)
+			    properties.bottomCellsWeight -= 10;
 			break;
 		    case 5:
-			properties.lineRemoveWeight -=10;
+			if (properties.lineRemoveWeight - 10 >= -1000)
+			    properties.lineRemoveWeight -= 10;
 			break;
 		    case 6:
-			properties.belowVoidCellWeight -= 10;
+			if (properties.belowVoidCellWeight - 10 >= -1000)
+			    properties.belowVoidCellWeight -= 10;
 			break;
 		    case 7:
-			properties.createVoidCellWeight -= 10;
+			if (properties.createVoidCellWeight - 10 >= -1000)
+			    properties.createVoidCellWeight -= 10;
 			break;
 		    case 8:
-			properties.voidCellbetweenBlocksWeight -= 10;
+			if (properties.voidCellbetweenBlocksWeight - 10 >= -1000)
+			    properties.voidCellbetweenBlocksWeight -= 10;
 			break;
 		    case 9:
-			properties.voidCellStickyWallWeight -= 10;
+			if (properties.voidCellStickyWallWeight - 10 >= -1000)
+			    properties.voidCellStickyWallWeight -= 10;
 			break;
 		    }
-		    
+
 		    properties.save();
-		    
+
 		    break;
-		    
+
 		case KeyEvent.VK_RIGHT:
-		    
-		    switch(curPoint) {
+
+		    switch (curPoint) {
 		    case 0:
 			properties.masterVolumeUp();
 			break;
@@ -104,30 +110,63 @@ public class OptionPanel extends JPanel {
 			properties.effectVolumeUp();
 			break;
 		    case 3:
-			properties.blockDownWeight += 10;
+			if (properties.blockDownWeight + 10 <= 1000)
+			    properties.blockDownWeight += 10;
 			break;
 		    case 4:
-			properties.bottomCellsWeight += 10;
+			if (properties.bottomCellsWeight + 10 <= 1000)
+			    properties.bottomCellsWeight += 10;
 			break;
 		    case 5:
-			properties.lineRemoveWeight +=10;
+			if (properties.lineRemoveWeight + 10 <= 1000)
+			    properties.lineRemoveWeight += 10;
 			break;
 		    case 6:
-			properties.belowVoidCellWeight += 10;
+			if (properties.belowVoidCellWeight + 10 <= 1000)
+			    properties.belowVoidCellWeight += 10;
 			break;
 		    case 7:
-			properties.createVoidCellWeight += 10;
+			if (properties.createVoidCellWeight + 10 <= 1000)
+			    properties.createVoidCellWeight += 10;
 			break;
 		    case 8:
-			properties.voidCellbetweenBlocksWeight += 10;
+			if (properties.voidCellbetweenBlocksWeight + 10 <= 1000)
+			    properties.voidCellbetweenBlocksWeight += 10;
 			break;
 		    case 9:
-			properties.voidCellStickyWallWeight += 10;
+			if (properties.voidCellStickyWallWeight + 10 <= 1000)
+			    properties.voidCellStickyWallWeight += 10;
 			break;
 		    }
-		    
+
 		    properties.save();
-		    
+
+		    break;
+
+		case KeyEvent.VK_ENTER:
+		    switch (curPoint) {
+		    case 3:
+			properties.blockDownWeight = 10;
+			break;
+		    case 4:
+			properties.bottomCellsWeight = 20;
+			break;
+		    case 5:
+			properties.lineRemoveWeight = 250;
+			break;
+		    case 6:
+			properties.belowVoidCellWeight = -100;
+			break;
+		    case 7:
+			properties.createVoidCellWeight = -100;
+			break;
+		    case 8:
+			properties.voidCellbetweenBlocksWeight = 30;
+			break;
+		    case 9:
+			properties.voidCellStickyWallWeight = 50;
+			break;
+		    }
 		    break;
 
 		}
@@ -146,7 +185,41 @@ public class OptionPanel extends JPanel {
 
 	drawProperties(g);
 
+	drawHelp(g);
+
 	repaint();
+    }
+
+    private void drawHelp(Graphics g) {
+
+	String str = "";
+
+	switch (curPoint) {
+	case 3:
+	    str = "블럭이 최대한 아래로 배치되도록 하는 가중치입니다.";
+	    break;
+	case 4:
+	    str = "최하단에 블럭이 배치되도록 하는 가중치입니다.";
+	    break;
+	case 5:
+	    str = "라인이 제거되는 위치에 배치되도록 하는 추가 가중치입니다.";
+	    break;
+	case 6:
+	    str = "블럭이 놓였을 때 생성되는 빈 블럭을 피하도록 하는 추가 가중치입니다.";
+	    break;
+	case 7:
+	    str = "전체 보드에서 만들어지는 빈 블럭 만큼 배치를 피하도록 하는 추가 가중치입니다.";
+	    break;
+	case 8:
+	    str = "블럭 사이에 빈 블럭이 있을 때 채우도록 하는 가중치입니다.";
+	    break;
+	case 9:
+	    str = "벽에 빈 블럭이 있을때 벽에 가깝게 붙이도록 하는 가중치입니다.";
+	    break;
+	}
+
+	g.setColor(Color.BLACK);
+	g.drawString(str, 700, 500);
     }
 
     private void drawTitle(Graphics g) {

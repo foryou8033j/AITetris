@@ -35,8 +35,6 @@ public class Title extends JPanel {
     
     boolean isQuitQuestion = false;
     boolean isQuitCursorOnExit = true;
-
-    //TitleKeyHandler keyHandler = new TitleKeyHandler();
     
     KeyAdapter keyHandler = null;
 
@@ -48,9 +46,6 @@ public class Title extends JPanel {
 	setBorder(BorderFactory.createLineBorder(Color.black));
 	setFocusable(true);
 	
-	//new MusicPlayer(tetris.getProperties()).play();
-	
-
 	keyHandler = new KeyAdapter() {
 	    @Override
 	    public void keyPressed(KeyEvent e) {

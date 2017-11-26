@@ -14,7 +14,6 @@ public class ControlModel {
     public ControlModel(GameBoard gameBoard) {
 	this.gameBoard = gameBoard;
 	
-	
 	System.out.println("조작 모델 초기화");
     }
     
@@ -28,6 +27,10 @@ public class ControlModel {
     
     public boolean moveDown() {
     	return gameBoard.tryMove(gameBoard.curPiece, gameBoard.curX, gameBoard.curY-1);
+    }
+    
+    public boolean doRotate() {
+	return gameBoard.tryMove(gameBoard.curPiece.rotateRight(), gameBoard.curX, gameBoard.curY);
     }
     
     public void moveHardDown() {

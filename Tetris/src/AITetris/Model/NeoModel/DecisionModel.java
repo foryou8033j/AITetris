@@ -102,13 +102,13 @@ public class DecisionModel {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 
-		if (gameBoard.curX > selectedModel.getX()) {
+		if (gameBoard.curX > selectedModel.getX()) {	//목표 X 좌표에 도달하도록 왼쪽으로 이동한다.
 		    if (!controlModel.moveLeft()) {
 			Timer t = (Timer) e.getSource();
 			t.stop();
 		    }
 
-		} else if (gameBoard.curX < selectedModel.getX()) {
+		} else if (gameBoard.curX < selectedModel.getX()) { //목표 X 좌표에 도달하도록 오른쪽으로 이동한다.
 		    if (!controlModel.moveRight()) {
 			Timer t = (Timer) e.getSource();
 			t.stop();
@@ -116,7 +116,7 @@ public class DecisionModel {
 
 		} else {
 
-		    if (!controlModel.moveDown()) {
+		    if (!controlModel.moveDown()) {	//목표 X 좌표에 도달하면 하강한 후 중지한다.
 			Timer t = (Timer) e.getSource();
 			t.stop();
 			weightModel.clear();
