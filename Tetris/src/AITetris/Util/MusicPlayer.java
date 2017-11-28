@@ -23,7 +23,7 @@ public class MusicPlayer extends Thread {
 
     boolean isPlay = false;
 
-    String url = "https://alcoholcoding.com/music/tetris/";
+    String url = "https://ci.kumoh.ac.kr/music/tetris/";
 
     ObservableList<String> medias = FXCollections.observableArrayList(
 	    Music.tetris + ".mp3",
@@ -53,10 +53,11 @@ public class MusicPlayer extends Thread {
 	    e.printStackTrace();
 	}
 
+
     }
 
     private void initMediaPlayer(String path) {
-
+/*
 	if (path.equals(""))
 	    return;
 	try {
@@ -78,7 +79,7 @@ public class MusicPlayer extends Thread {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
-	}
+	}*/
 
     }
 
