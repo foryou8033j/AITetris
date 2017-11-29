@@ -4,7 +4,12 @@ import java.util.Comparator;
 
 import AITetris.Model.Rank;
 
-//오름차순
+/**
+ * 랭킹 데이터 정렬을 위한 클래스
+ * Comparator 인터페이스의 compare 메소드를 재정의한다
+ * @author Jeongsam
+ *
+ */
 public class RankingAscending implements Comparator<Rank> {
 
     @Override

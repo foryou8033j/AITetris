@@ -20,8 +20,8 @@ import javafx.collections.ObservableList;
  */
 public class CognitionModel {
 
-    GameBoard gameBoard = null;
-    Neo neo = null;
+    GameBoard gameBoard = null; // 게임데이터를 저장한다
+    Neo neo = null; // 각 모듈과의 연동을 위한 Neo 객체를 저장한다.
 
     public CognitionModel(GameBoard gameBoard, Neo neo) {
 	this.gameBoard = gameBoard;
@@ -42,8 +42,9 @@ public class CognitionModel {
 		if (weightModel[j][i] == -1)
 		    continue;
 
+		// 한칸이 내려갈 수록 가중치를 추가한다.
 		weightModel[j][i] = weightMult += neo.properties.blockDownWeight;
-		if (i == 0)
+		if (i == 0) // 최하단 블록은 가중치를 추가한다.
 		    weightModel[j][i] += neo.properties.bottomCellsWeight;
 
 	    }
@@ -57,6 +58,7 @@ public class CognitionModel {
 		if (weightModel[j][i] != -1) {
 
 		    try {
+			// 블럭 사이에 빈 공간이 끼인 경우 가중치를 추가한다.
 			if (weightModel[j - 1][i] == -1)
 			    weightModel[j][i] += neo.properties.voidCellbetweenBlocksWeight;
 
@@ -127,8 +129,15 @@ public class CognitionModel {
 
     }
 
-    private void getTetriminoWeight(Graphics g, Shape shape, int x, int[][] boardWeight,
-	    ObservableList<WeightModel> weightModel) {
+    /**
+     * 기본 가중치를 연산한다
+     * @param g
+     * @param shape
+     * @param x
+     * @param boardWeight
+     * @param weightModel
+     */
+    private void getTetriminoWeight(Graphics g, Shape shape, int x, int[][] boardWeight, ObservableList<WeightModel> weightModel) {
 
 	Shape tmpShape;
 
@@ -192,6 +201,7 @@ public class CognitionModel {
 		--tmpY;
 	    }
 
+	    // 블록이 하강할 예상 지점을 그려준다
 	    if (tmpShape.getShape() != Tetrominoes.NoShape) {
 		for (int i = 0; i < 4; ++i) {
 
@@ -224,7 +234,7 @@ public class CognitionModel {
 
 		// 블럭이 놓여진 위치의 가중치의 합산값을 구한다.
 		for (int i = 0; i < 4; i++) {
-		    //System.out.print(boardWeight[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + " ");
+		    // System.out.print(boardWeight[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] + "");
 		    weightSum += boardWeight[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)];
 		    tmpWeightBoard[tmpX + tmpShape.x(i)][tmpY - tmpShape.y(i)] = -1;
 		}
@@ -242,7 +252,7 @@ public class CognitionModel {
 		    if (existCells == gameBoard.BoardWidth)
 			removeLines++;
 		}
-		weightSum += removeLines * neo.properties.lineRemoveWeight; //150
+		weightSum += removeLines * neo.properties.lineRemoveWeight; // 150
 
 		// 블럭이 놓여 졌다고 가정할 때 놓여진 블럭이 빈공간을 만드는 갯수 만큼 가중치를 낮춘다.
 		int voidCellBelowBlock = 0;
@@ -268,7 +278,7 @@ public class CognitionModel {
 		    weightSum += voidCellBelowBlock * neo.properties.belowVoidCellWeight;
 		    if (voidCellBelowBlock > 0)
 			voidCellMadeBlock++;
-		    //System.out.println("Void Cell Vount " + voidCellBelowBlock);
+		    // System.out.println("Void Cell Vount " + voidCellBelowBlock);
 		}
 
 		weightSum += voidCellMadeBlock * neo.properties.createVoidCellWeight;

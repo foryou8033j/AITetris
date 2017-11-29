@@ -8,23 +8,36 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javazoom.jl.player.Player;
 
+/**
+ * JavaFX Media 컴포넌트를 이용한 MusicPlayer 클래스
+ * @author Jeongsam
+ *
+ */
 public class MusicPlayer extends Thread {
 
+    /**
+     * 음악 이름을 Enum 형태로 정의한다
+     * @author Jeongsam
+     *
+     */
     public enum Music {
 	tetris, tetris1, tetris2, tetris3, tetris4, tetris_help, tetris_rimix, tetris_rimix1, tetris_title
     }
 
     private Properties properties;
-    private JFXPanel panel = null;
-
+    private JFXPanel panel = null;	//JavaFX Media 컴포넌트 사용을 위해 JFXPanel을 임시로 생성한다(사용하지않음)
+    
     Media media = null;
     MediaPlayer player = null;
 
     boolean isPlay = false;
 
+    //음악이 저장 된 서버 URL
     String url = "https://ci.kumoh.ac.kr/music/tetris/";
 
+    //음악 리스트 URL 을 저장한다
     ObservableList<String> medias = FXCollections.observableArrayList(
 	    Music.tetris + ".mp3",
 	    Music.tetris1 + ".mp3", 
@@ -56,8 +69,12 @@ public class MusicPlayer extends Thread {
 
     }
 
+    /**
+     * 음악 플레이어를 초기화한다
+     * @param path
+     */
     private void initMediaPlayer(String path) {
-/*
+
 	if (path.equals(""))
 	    return;
 	try {
@@ -79,7 +96,7 @@ public class MusicPlayer extends Thread {
 
 	} catch (Exception e) {
 	    e.printStackTrace();
-	}*/
+	}
 
     }
 
@@ -87,6 +104,7 @@ public class MusicPlayer extends Thread {
     public void run() {
 	super.run();
 
+	//음악 재생을 위한 쓰레드
 	while (true) {
 
 	    try {
@@ -94,8 +112,11 @@ public class MusicPlayer extends Thread {
 		if (player != null) {
 		    if (isPlay)
 			player.play();
-		    else
+		    else {
+			player.pause();
 			player.stop();
+		    }
+			
 
 		    player.setVolume(properties.backgroundVolume);
 		}
@@ -108,6 +129,9 @@ public class MusicPlayer extends Thread {
 
     }
 
+    /**
+     * 음악 변경
+     */
     public void changeMusic() {
 
 	if (!listMusic.hasNext())

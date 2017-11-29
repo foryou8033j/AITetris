@@ -20,7 +20,7 @@ import AITetris.View.Ranking.RankingPanel;
 import AITetris.View.Title.Title;
 
 /**
- * 테트리스의 기본 프레임을 띄워준다.
+ * 테트리스의 기본 프레임을 띄워주고, 각 화면으로의 이동을 관리한다.
  * 
  * @author Jeongsam
  *
@@ -51,6 +51,7 @@ public class Tetris extends JFrame {
 	setFocusable(false);
 	setResizable(false);
 
+	//Swing 특유의 딱딱한 UI 대신 운영체제의 UI를 따르도록 한다.
 	try {
 	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 	} catch (ClassNotFoundException e) {
@@ -69,6 +70,7 @@ public class Tetris extends JFrame {
 
 	getContentPane().setLayout(null);
 
+	//Title을 보여준다.
 	initTitle();
 
 	show();
@@ -80,6 +82,9 @@ public class Tetris extends JFrame {
 	getContentPane().repaint();
     }
 
+    /**
+     * 타이틀 화면을 보여준다.
+     */
     public void initTitle() {
 
 	clearContentPanel();
@@ -98,6 +103,9 @@ public class Tetris extends JFrame {
 
     }
 
+    /**
+     * 1인용 플레이 화면을 보여준다.
+     */
     public void initSingle() {
 
 	title.clearPanel();
@@ -118,6 +126,10 @@ public class Tetris extends JFrame {
 	musicPlayer.changeMusic();
     }
 
+    /**
+     * 2인용 화면을 보여준다.
+     * @param competitionMode	대전 모드 사용 유무
+     */
     public void initDuo(boolean competitionMode) {
 
 	title.clearPanel();
@@ -129,22 +141,31 @@ public class Tetris extends JFrame {
 	GameBoard board2 = new GameBoard(this, competitionMode, playMode, Player.Player2,
 		20 + B_WIDTH_SIZE / 2 + B_WIDTH_SIZE + 20, 20, B_WIDTH_SIZE, B_HEIGHT_SIZE);
 
+	//Key 관리용 클래스
 	KeyHandler keyHandler = new KeyHandler(this, playMode, board, board2);
 
+	//KeyListener에 두개의 사용자 키를 동시에 관리 할 수 있는 KeyHandler 클래스를 연동한다.
 	board.addKeyListener(keyHandler);
 	board2.addKeyListener(keyHandler);
 
+	//두개의 게임 보드의 연결점, 게임 공격, 승리판정 여부를 관리한다.
 	new GameController(board, board2).start();
 
 	getContentPane().add(board);
 	getContentPane().add(board2);
 
+	//Pane을 추가한 후에 Focus를 요청해야 KeyListener 가 동작한다.
 	board.requestFocus();
 	board2.requestFocus();
 
+	//음악 변경
 	musicPlayer.changeMusic();
     }
 
+    /**
+     * 인공 지능 화면을 보여준다
+     * @param competitionMode	대전 모드 사용 유무
+     */
     public void initNeo(boolean competitionMode) {
 
 	title.clearPanel();
@@ -177,6 +198,9 @@ public class Tetris extends JFrame {
 
     }
 
+    /**
+     * 옵션 화면을 보여준다.
+     */
     public void initOption() {
 
 	title.clearPanel();
@@ -191,6 +215,9 @@ public class Tetris extends JFrame {
 
     }
 
+    /**
+     * 랭킹 화면을 보여준다.
+     */
     public void initRanking() {
 
 	title.clearPanel();
@@ -214,14 +241,24 @@ public class Tetris extends JFrame {
 	return properties;
     }
 
+    /**
+     * DB 컨트롤러를 반환한다.
+     * @return {@link RankDBController}
+     */
     public RankDBController getDB() {
 	return rankDBController;
     }
 
+    /**
+     * 음악 플레이어를 반환한다.
+     * @return {@link MusicPlayer}
+     */
     public MusicPlayer getMusicPlayer() {
 	return musicPlayer;
     }
 
+    /***********************************************************************/
+    
     public static void main(String[] args) {
 
 	try {

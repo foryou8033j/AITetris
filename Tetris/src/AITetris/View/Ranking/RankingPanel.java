@@ -17,6 +17,11 @@ import AITetris.Model.Rank;
 import AITetris.Util.RankingAscending;
 import AITetris.Util.String.StringPadding;
 
+/**
+ * 랭킹 화면을 그려준다.
+ * @author Jeongsam
+ *
+ */
 public class RankingPanel extends JPanel {
 
     private Tetris tetris;
@@ -50,11 +55,12 @@ public class RankingPanel extends JPanel {
 
     private void drawRank(Graphics g) {
 
+	//DB로부터 랭킹 데이터를 List로 받아온다.
 	List<Rank> list = tetris.getDB().selectAll();
 
-	drawStringCenterOfPanel(g, Color.BLACK, 32, StringPadding.getCPad("Press Any Key Return To Title", 20, " "),
-		60);
+	drawStringCenterOfPanel(g, Color.BLACK, 32, StringPadding.getCPad("Press Any Key Return To Title", 20, " "), 60);
 
+	//랭킹 데이터를 오름차순으로 정렬한다
 	RankingAscending ascending = new RankingAscending();
 	Collections.sort(list, ascending);
 
@@ -74,8 +80,11 @@ public class RankingPanel extends JPanel {
 	y += (getFontMetrics(g.getFont()).getHeight() + 20);
 
 	for (int i = 0; i < list.size(); i++) {
+	    
+	    //상위 10개만 보여준다.
 	    if (i > 10)
 		break;
+	    
 	    Rank rank = list.get(i);
 	    
 	    g.drawString((i+1) + "", x1-60, y);
@@ -92,16 +101,11 @@ public class RankingPanel extends JPanel {
     /**
      * 문자열을 가로 기준 중앙에 그려준다.
      * 
-     * @param g
-     *            그래픽스 모델
-     * @param color
-     *            색상
-     * @param size
-     *            폰트 사이즈
-     * @param str
-     *            문자열
-     * @param height
-     *            출력 높이
+     * @param g 그래픽스 모델
+     * @param color 색상
+     * @param size 폰트 사이즈
+     * @param str 문자열
+     * @param height 출력 높이
      */
     private int drawStringCenterOfPanel(Graphics g, Color color, int size, String str, int height) {
 

@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import AITetris.Tetris;
+import AITetris.Model.Properties;
 import AITetris.Model.Rank;
 import AITetris.Util.RankingAscending;
 import AITetris.View.Player;
@@ -34,55 +35,53 @@ import AITetris.View.Board.Tetrimino.Tetrominoes;
  **/
 public class GameBoard extends JPanel implements ActionListener {
 
-    public final int BoardWidth = 12;
-    public final int BoardHeight = 24;
+    public final int BoardWidth = 12; // 블럭의 가로 개수를 정의한다
+    public final int BoardHeight = 24; // 블럭의 세로 개수를 정의한다.
 
-    private Timer timer;
+    private Timer timer; // 블럭 하강 속도를 관리한다.
 
-    public boolean isFallingFinished = false;
-    boolean isStarted = false;
-    boolean isPaused = false;
-    boolean isGhost = false;
-    boolean isOver = false;
-    boolean isWin = false;
-    boolean isDraw = false;
-    boolean isRanked = false;
-    boolean isCompetition = false;
-    boolean isCrazyKeyboard = false;
-    boolean isAttack = false;
+    public boolean isFallingFinished = false; // 블럭의 하강 완료 여부를 관리한다.
+    boolean isStarted = false; // 게임 시작 여부 관리
+    boolean isPaused = false; // 일시 중지 여부 관리
+    boolean isGhost = false; // 고스트 모드 사용 여부 관리
+    boolean isOver = false; // 게임 종료 여부 관리
+    boolean isWin = false; // 승리 판정 여부 관리
+    boolean isDraw = false; // 무승부 판정 여부 관리
+    boolean isRanked = false; // 랭킹 등록 여부 관리
+    boolean isCompetition = false; // 대전모드 인지 확인한다
+    boolean isCrazyKeyboard = false; // 키보드 비정상 공격을 받았는지 확인한다
+    boolean isAttack = false; // 현재 공격받았는지 확인한다
 
-    private int numLinesRemoved = 0;
-    private int numTetrominoDropCount = 0;
-    private int numCountGhostUse = 0;
-    private int attackType = 0;
-    private String attackMessage = "";
+    private int numLinesRemoved = 0; // 제거 된 라인의 개수를 저장한다
+    private int numTetrominoDropCount = 0; // 하강한 테트리미노의 개수를 저장한다.
+    private int numCountGhostUse = 0; // 사용한 고스트블럭 개수를 저장한다
+    private int attackType = 0; // 수행한 공격 형태를 저장한다
+    private String attackMessage = ""; // 공격 메세지 저장용 임시 변수
 
-    public int curX = 0;
-    public int curY = 0;
-    public int ghostCurX = 0;
-    public int ghostCurY = 0;
+    public int curX = 0; // 현재 블럭의 X 좌표
+    public int curY = 0; // 현재 블럭의 Y 좌표
+    public int ghostCurX = 0; // 고스트블럭의 X좌표
+    public int ghostCurY = 0; // 고스트블럭의 Y좌표
 
-    public int point = 0;
-    public int ghostUsed = 0;
+    public int point = 0; // 현재 점수
+    public int ghostUsed = 0; // 고스트를 이용해 제거한 라인 개수
 
-    public Shape curPiece;
+    public Shape curPiece; // 현재 블록 형태
     Shape nextPiece;
     Shape ghostPiece;
     Shape tempPiece;
 
-    private Tetrominoes[] board;
+    private Tetrominoes[] board; // 하강한 블록이 저장되는 배열
 
     private Tetris tetris;
     private InfoBoard infoBoard;
 
-    long curTime;
+    long curTime; // 게임 시간 정보 관리
     long defTime;
     long pauseTime;
 
-    private String name = "NULL";
-
-    PlayerMode playMode;
-    Player player;
+    PlayerMode playMode; // 플레이 형태
+    Player player; // 플레이어 종류
 
     public GameBoard(Tetris tetris, boolean isCompetition, PlayerMode playMode, Player player, int x, int y, int width,
 	    int height) {
@@ -93,6 +92,7 @@ public class GameBoard extends JPanel implements ActionListener {
 	this.player = player;
 	this.isCompetition = isCompetition;
 
+	// 레이아웃을 그려준다
 	setLayout(null);
 	setBounds(x, y, width, height);
 	setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
@@ -100,11 +100,13 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	board = new Tetrominoes[BoardWidth * BoardHeight];
 
+	// Shape 객체 초기화
 	curPiece = new Shape();
 	nextPiece = new Shape();
 	ghostPiece = new Shape();
 	tempPiece = new Shape();
 
+	// InforBoard 객체 초기화
 	infoBoard = new InfoBoard(this);
 	infoBoard.setBounds(width - 100, 0, 100, height);
 	add(infoBoard);
@@ -116,16 +118,13 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
-    public void setName(String name) {
-	this.name = name;
-    }
-
     public void actionPerformed(ActionEvent e) {
 
 	curTime = System.currentTimeMillis();
 	infoBoard.leftTime = (defTime - curTime);
 
-	if ((float) (defTime - curTime) / 1000 < 0) {
+	// 시관 초과하였을 경우 동악
+	if ((float) (defTime - curTime) / Properties.time < 0) {
 	    curPiece.setShape(Tetrominoes.NoShape);
 	    isStarted = false;
 	    isOver = true;
@@ -143,10 +142,12 @@ public class GameBoard extends JPanel implements ActionListener {
 	    timer.setDelay(200);
 	}
 
+	// 하강이 끝나면 새로운 블록을 생성한다
 	if (isFallingFinished) {
 	    isFallingFinished = false;
 	    newPiece();
 	} else {
+	    // 하강이 끝나지 않았다면 현재 하강중인 테트리미노를 한칸 내린다
 	    oneLineDown();
 	}
 
@@ -164,19 +165,33 @@ public class GameBoard extends JPanel implements ActionListener {
 	return (int) getSize().getHeight() / BoardHeight;
     }
 
+    /**
+     * 좌표상 board 1차원 배열에 위치한 테트리미노의 정보를 반환한다
+     * 
+     * @param x
+     *            좌표
+     * @param y
+     *            좌표
+     * @return {@link Tetrominoes}
+     */
     public Tetrominoes shapeAt(int x, int y) {
 	return board[(y * BoardWidth) + x];
     }
 
+    /**
+     * 게임 정보를 초기화하고, Timer를 시작하여 게임을 동작한다
+     */
     public void start() {
 	if (isPaused || isStarted)
 	    return;
 
 	else {
 
+	    // 시간 초기화
 	    curTime = System.currentTimeMillis();
-	    defTime = System.currentTimeMillis() + 60000;
+	    defTime = System.currentTimeMillis() + Properties.time;
 
+	    // 기본값 초기화
 	    isRanked = false;
 	    isStarted = true;
 	    isOver = false;
@@ -192,19 +207,26 @@ public class GameBoard extends JPanel implements ActionListener {
 	    point = 0;
 	    ghostUsed = 0;
 
+	    // Board 초기화
 	    clearBoard();
 
+	    // Shape 객체 초기화
 	    tempPiece.setShape(Tetrominoes.NoShape);
 	    nextPiece.setRandomShape();
 
+	    // Timer 시작 (ActionListener 가 동작한다)
 	    timer.setDelay(300);
 	    timer.start();
 
+	    // 새로운 Shape 생성
 	    newPiece();
 	}
 
     }
 
+    /**
+     * 일시 중지를 동작한다, 이미 일시중지 중인 경우 일시정지를 해제한다
+     */
     public void pause() {
 	if (!isStarted)
 	    return;
@@ -213,17 +235,20 @@ public class GameBoard extends JPanel implements ActionListener {
 
 	if (isPaused) {
 	    tetris.getMusicPlayer().pause();
-	    pauseTime = System.currentTimeMillis();
+	    pauseTime = System.currentTimeMillis(); // 중지한 시간 저장
 	    timer.stop();
 	} else {
 	    tetris.getMusicPlayer().play();
 	    timer.start();
-	    defTime += (System.currentTimeMillis() - pauseTime);
+	    defTime += (System.currentTimeMillis() - pauseTime); // 중지 되었던 시간만큼 목표시간을 추가한다
 	}
 
 	repaint();
     }
 
+    /**
+     * 임시 블록과 교환한다, 없는 경우 새로 추가한다.
+     */
     public void exchangePiece() {
 
 	if (!isStarted || isPaused)
@@ -246,17 +271,22 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 블록을 회전한다, 회전 할 수 없는 경우 회전 가능한 위치까지 이동한다
+     * 
+     * @return 회전 가능 여부
+     */
     public boolean tryRotate() {
 
 	if (!tryMove(curPiece.rotateRight(), curX, curY)) {
 
-	    if (curX < BoardWidth / 2) {
+	    // 회전이 불가능한 경우, 회전 가능한 위치까지 이동
+	    if (curX < BoardWidth / 2)
 		while (!tryMove(curPiece.rotateRight(), curX++, curY))
 		    ;
-	    } else {
+	    else
 		while (!tryMove(curPiece.rotateRight(), curX--, curY))
 		    ;
-	    }
 
 	} else {
 	    if (isGhost)
@@ -265,6 +295,12 @@ public class GameBoard extends JPanel implements ActionListener {
 	return true;
     }
 
+    /**
+     * 블록 교환이 가능한지 여부를 검사한다, 교환 하려는 위치에 다른 블록이 위치하지 않았는지 검사한다.
+     * 
+     * @param newPiece
+     * @return
+     */
     private boolean tryExchange(Shape newPiece) {
 
 	for (int i = 0; i < 4; ++i) {
@@ -287,6 +323,9 @@ public class GameBoard extends JPanel implements ActionListener {
 	return true;
     }
 
+    /**
+     * 게임을 초기화한다
+     */
     public void reset() {
 	start();
     }
@@ -302,26 +341,25 @@ public class GameBoard extends JPanel implements ActionListener {
 	drawShapes(g);
 
 	// UI Draw 관련
-	if (!isStarted && !isOver)
-	    drawHelpScreen(g);
-
+	// 3개의 Tetromino 가 Drop 하기 전에는 HelpScreen 을 그려준다
+	if (numTetrominoDropCount < 3 && !isStarted && !isOver)
+	    drawHelpScreen(g); // 도움말을 그려준다
+	
 	if (isOver)
-	    drawGameOverScreen(g);
+	    drawGameOverScreen(g);	//게임 종료 화면을 그려준다
 
 	if (isPaused && isStarted)
-	    drawPauseScreen(g);
-
-	// 3개의 Tetromino 가 Drop 하기 전에는 HelpScreen 을 그려준다
-	if (numTetrominoDropCount < 3 && !isPaused && !isOver)
-	    drawHelpScreen(g);
+	    drawPauseScreen(g);		//일시중지 화면을 그려준다
 
 	// 네오 플레이 문구를 그려준다.
 	if (player.equals(Player.Neo) && !isOver)
 	    drawStringCenterOfPanel(g, Color.GRAY, 16, "AI. NEO 가 플레이합니다", 260);
 
+	//공격 메세지를 그려준다
 	drawMessageFollowingAttack(g);
 
-	// Limit Line Draw
+	// 넘지말아야 할 선을 그려준다
+	//TODO  이 위치는 살짝 애매함, 수정 필요 171108
 	g.setColor(Color.RED);
 	g.drawLine(0, BoardHeight, (int) getSize().getWidth() - 100, BoardHeight);
 
@@ -357,6 +395,10 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 블록을 그려준다
+     * @param g
+     */
     private void drawShapes(Graphics g) {
 	Dimension size = getSize();
 	int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();
@@ -447,6 +489,10 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 종료한다
+     */
+    @Deprecated
     private void quit() {
 	Calendar calendar = Calendar.getInstance();
 	SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -454,7 +500,6 @@ public class GameBoard extends JPanel implements ActionListener {
 
     /**
      * 도움말 화면을 그려준다
-     * 
      * @param g
      */
     private void drawHelpScreen(Graphics g) {
@@ -479,9 +524,10 @@ public class GameBoard extends JPanel implements ActionListener {
 	    color = Color.BLACK;
 	}
 
+	// 1인용 키, AI 키 도움말
 	if (playMode.equals(PlayerMode.Single) || playMode.equals(PlayerMode.AI)
 		|| playMode.equals(PlayerMode.AI_Competition)) {
-
+	    
 	    if (player.equals(Player.Player1)) {
 		drawStringCenterOfPanel(g, color, 16, "[방향키 ▲] 블럭 회전", line += metr.getHeight());
 		drawStringCenterOfPanel(g, color, 16, "[방향키 ◀ ▶] 블럭 이동", line += metr.getHeight());
@@ -493,6 +539,7 @@ public class GameBoard extends JPanel implements ActionListener {
 		drawStringCenterOfPanel(g, color, 16, "[G] 고스트 블럭 모드", line += metr.getHeight());
 	    }
 
+	    //2인용 키 도움말
 	} else if (playMode.equals(PlayerMode.Duo) || playMode.equals(PlayerMode.Duo_Competition)) {
 
 	    if (player.equals(Player.Player1)) {
@@ -552,6 +599,9 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 현재 하강중일 블록을 바닥까지 내린다
+     */
     public void dropDown() {
 
 	if (!isStarted || isPaused)
@@ -566,16 +616,25 @@ public class GameBoard extends JPanel implements ActionListener {
 	pieceDropped();
     }
 
+    /**
+     * 현재 하강중일 블록을 한칸 내린다
+     */
     private void oneLineDown() {
 	if (!tryMove(curPiece, curX, curY - 1))
 	    pieceDropped();
     }
 
+    /**
+     * 블록 데이터를 초기화한다
+     */
     private void clearBoard() {
 	for (int i = 0; i < BoardHeight * BoardWidth; ++i)
 	    board[i] = Tetrominoes.NoShape;
     }
 
+    /**
+     * 블록 하강이 완료 하였을때 조건을 검사한다
+     */
     private void pieceDropped() {
 
 	for (int i = 0; i < 4; ++i) {
@@ -589,6 +648,9 @@ public class GameBoard extends JPanel implements ActionListener {
 	    newPiece();
     }
 
+    /**
+     * 새로운 블록을 생성한다
+     */
     private void newPiece() {
 	numTetrominoDropCount++;
 
@@ -605,6 +667,9 @@ public class GameBoard extends JPanel implements ActionListener {
 	}
     }
 
+    /**
+     * 게임을 종료한다
+     */
     public void doQuitGame() {
 	curPiece.setShape(Tetrominoes.NoShape);
 	isStarted = false;
@@ -613,6 +678,13 @@ public class GameBoard extends JPanel implements ActionListener {
 	repaint();
     }
 
+    /**
+     * 블록의 이동이 가능한지 검사한다
+     * @param newPiece
+     * @param newX
+     * @param newY
+     * @return
+     */
     public boolean tryMove(Shape newPiece, int newX, int newY) {
 
 	if (!isStarted || isPaused)
@@ -631,9 +703,14 @@ public class GameBoard extends JPanel implements ActionListener {
 	curX = newX;
 	curY = newY;
 	repaint();
+	
 	return true;
     }
 
+    /**
+     * 고스트 블록을 그려준다
+     * @param g
+     */
     private void drawGhostPiece(Graphics g) {
 
 	ghostPiece = curPiece;
@@ -659,6 +736,13 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 고스트블록이 이동이 가능한지 검사한다
+     * @param newGhostPiece
+     * @param newX
+     * @param newY
+     * @return
+     */
     public boolean tryGhostPieceMove(Shape newGhostPiece, int newX, int newY) {
 	for (int i = 0; i < 4; ++i) {
 	    int x = newX + ghostPiece.x(i);
@@ -676,9 +760,16 @@ public class GameBoard extends JPanel implements ActionListener {
 	return true;
     }
 
+    /**
+     * 고스트 블록을 그려준다, 고스트블록은 단색이다
+     * @param g
+     * @param x
+     * @param y
+     * @param shape
+     */
     private void drawGhostSquare(Graphics g, int x, int y, Tetrominoes shape) {
 
-	Color color = Color.BLACK;
+	Color color = Color.LIGHT_GRAY;
 
 	g.setColor(color);
 	g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
@@ -692,6 +783,10 @@ public class GameBoard extends JPanel implements ActionListener {
 	g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
     }
 
+    /**
+     * 전체 보드를 검사하고 가득찬 라인을 제거한다.
+     * 제거 된 라인 개수에 따라 점수를 부여한다
+     */
     private void removeFullLines() {
 	int numFullLines = 0;
 
@@ -723,6 +818,11 @@ public class GameBoard extends JPanel implements ActionListener {
 	}
     }
 
+    /**
+     * 제거된 라인의 수 만큼 점수를 추가한다
+     * @param numFullLines
+     * @return
+     */
     private int getPointAdd(int numFullLines) {
 	int sum = point;
 
@@ -735,14 +835,26 @@ public class GameBoard extends JPanel implements ActionListener {
 	return sum;
     }
 
+    /**
+     * 점수 반환
+     * @return
+     */
     public int getPoint() {
 	return point - ghostUsed;
     }
 
+    /**
+     * 대전 모드인지 확인한다
+     * @return
+     */
     public boolean isCompetition() {
 	return isCompetition;
     }
 
+    /**
+     * 제거 된 라인 수를 반환한다
+     * @return
+     */
     public int getNumLineRemoved() {
 
 	if (numLinesRemoved > 1) {
@@ -765,6 +877,10 @@ public class GameBoard extends JPanel implements ActionListener {
 	return tmp;
     }
 
+    /**
+     * 공격 당했 / 공격했을 경우의 메세지를 그려준다
+     * @param g
+     */
     private void drawMessageFollowingAttack(Graphics g) {
 
 	// 공격을 했을 경우
@@ -784,6 +900,10 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 공격 당했을 때 현재 GameBoard에 적용되는 효과를 적용한다
+     * @param attackPower
+     */
     public void attack(int attackPower) {
 
 	if (attackPower < 2)
@@ -861,10 +981,24 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 블록을 그려준다
+     * @param g
+     * @param x
+     * @param y
+     * @param shape
+     */
     public void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
-	Color colors[] = { new Color(0, 0, 0), new Color(204, 102, 102), new Color(102, 204, 102),
-		new Color(102, 102, 204), new Color(204, 204, 102), new Color(204, 102, 204), new Color(102, 204, 204),
-		new Color(218, 170, 0), Color.GRAY };
+	Color colors[] = { 
+		new Color(0, 0, 0), 
+		new Color(204, 102, 102), 
+		new Color(102, 204, 102),
+		new Color(102, 102, 204), 
+		new Color(204, 204, 102), 
+		new Color(204, 102, 204), 
+		new Color(102, 204, 204),
+		new Color(218, 170, 0), 
+		Color.GRAY };
 
 	Color color = colors[shape.ordinal()];
 
@@ -886,16 +1020,11 @@ public class GameBoard extends JPanel implements ActionListener {
     /**
      * 문자열을 가로 기준 중앙에 그려준다.
      * 
-     * @param g
-     *            그래픽스 모델
-     * @param color
-     *            색상
-     * @param size
-     *            폰트 사이즈
-     * @param str
-     *            문자열
-     * @param height
-     *            출력 높이
+     * @param g 그래픽스 모델
+     * @param color 색상
+     * @param size 폰트 사이즈
+     * @param str 문자열
+     * @param height 출력 높이
      */
     private void drawStringCenterOfPanel(Graphics g, Color color, int size, String str, int height) {
 
@@ -909,22 +1038,30 @@ public class GameBoard extends JPanel implements ActionListener {
 
     }
 
+    /**
+     * 현재 Board 데이터를 반환한다
+     * @return
+     */
     public Tetrominoes[] getBoard() {
 	return board;
     }
 
+    /**
+     * 랭킹을 등록한다
+     */
+    //TODO 랭킹 등록 후 새로운 Dialog가 뜨는데 특정 경우에 키입력이 멈추는 문제있음 (171125)
     public void joinRank() {
 
 	if (isRanked)
 	    return;
 
 	/*
-	List<Rank> list = tetris.getDB().selectAll();
-
-	RankingAscending ascending = new RankingAscending();
-	Collections.sort(list, ascending);
-
-	
+	 * List<Rank> list = tetris.getDB().selectAll();
+	 * 
+	 * RankingAscending ascending = new RankingAscending(); Collections.sort(list,
+	 * ascending);
+	 * 
+	 * 
 	 * int size = (list.size() > 10) ? 10 : list.size();
 	 * 
 	 * for(int i=size-1; i>=0; i--) { if (list.get(i).getPoint() > getPoint()) {

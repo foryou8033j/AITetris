@@ -10,11 +10,16 @@ import java.util.List;
 
 import AITetris.Model.Rank;
 
+/**
+ * 랭킹 DB 서버 연결 관리 및 데이터 삽입/검색/삭제를 수행한다
+ * @author Jeongsam
+ *
+ */
 public class RankDBController {
 
     private Connection conn;
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "1k5rmf\\ht1a";
+    private static final String USERNAME = "user";
+    private static final String PASSWORD = "user";
     private static final String URL = "jdbc:mysql://alcoholcoding.com/alcoholcoding";
     private static final String TABLE = "Tetris";
 
@@ -22,8 +27,10 @@ public class RankDBController {
 
 	System.out.println("DB URL	 : " + URL);
 	System.out.println("USERNAME : " + USERNAME);
+	System.out.println("PASSWORD : " + "*");
 	System.out.println("TABLE	 : " + TABLE);
 
+	//DB서버에 연결한다
 	try {
 	    Class.forName("com.mysql.jdbc.Driver");
 	    conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
@@ -36,6 +43,10 @@ public class RankDBController {
 	}
     }
 
+    /**
+     * Rank 데이터를 DB에 삽입한다
+     * @param rank
+     */
     public void insertRank(Rank rank) {
 	String sql = "insert into " + TABLE + " values(?, ?, ?);";
 	PreparedStatement pstmt = null;
@@ -65,6 +76,7 @@ public class RankDBController {
 
     }
 
+    @Deprecated
     public void deleteAll() {
 	String sql = "delete from " + TABLE + " where name like '*'";
 	PreparedStatement pstmt = null;
@@ -83,6 +95,10 @@ public class RankDBController {
 	}
     }
 
+    /**
+     * DB로부터 랭킹 데이터를 받아와 List화 시킨다
+     * @return
+     */
     public List<Rank> selectAll() {
 	String sql = "select * from " + TABLE + ";";
 	PreparedStatement pstmt = null;

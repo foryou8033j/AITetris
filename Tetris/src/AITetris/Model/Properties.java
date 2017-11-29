@@ -3,6 +3,11 @@ package AITetris.Model;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
+/**
+ * 기본 옵션을 저장하는 Properties 클래스, Properties 라이브러리를 사용하여 옵션을 저장/불러온다
+ * @author Jeongsam
+ *
+ */
 public class Properties {
 
     private String propFilePath = "AITetris.dat";
@@ -18,6 +23,8 @@ public class Properties {
     public int createVoidCellWeight = -100; // 전체 공백 블럭 생성 가중치
     public int voidCellbetweenBlocksWeight = 30;// 블럭 사이에 낀 공백 블럭 가중치
     public int voidCellStickyWallWeight = 50; // 벽에 붙은 공백 블럭 가중치
+    
+    public static int time = 600000;
 
     public Properties() {
 	read();
@@ -62,7 +69,9 @@ public class Properties {
 	effectVolume -= 0.1;
     }
     
-    
+    /**
+     * 파일로 부터 속성을 읽는다
+     */
     public void read() {
 	
 	java.util.Properties prop = new java.util.Properties();
@@ -85,6 +94,8 @@ public class Properties {
 	    voidCellbetweenBlocksWeight = Integer.valueOf(prop.getProperty("voidCellbetweenBlocksWeight"));
 	    voidCellStickyWallWeight = Integer.valueOf(prop.getProperty("voidCellStickyWallWeight"));
 	    
+	    time = Integer.valueOf(prop.getProperty("time"));
+	    
 	}catch (Exception e) {
 	    
 	}
@@ -92,6 +103,9 @@ public class Properties {
 	
     }
 
+    /**
+     * 파일로 속성을 쓴다
+     */
     public void save() {
 
 	java.util.Properties prop = new java.util.Properties();
@@ -108,6 +122,8 @@ public class Properties {
 	    prop.setProperty("createVoidCellWeight", String.valueOf(createVoidCellWeight));
 	    prop.setProperty("voidCellbetweenBlocksWeight", String.valueOf(voidCellbetweenBlocksWeight));
 	    prop.setProperty("voidCellStickyWallWeight", String.valueOf(voidCellStickyWallWeight));
+	    
+	    prop.setProperty("time", String.valueOf(time));
 	    
 	    FileOutputStream out = new FileOutputStream("AITetris.properties");
 	    prop.store(out, "AITetris Config Settings");

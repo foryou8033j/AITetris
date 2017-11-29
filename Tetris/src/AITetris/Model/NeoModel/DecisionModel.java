@@ -28,13 +28,13 @@ import javafx.collections.ObservableList;
  */
 public class DecisionModel {
 
-    private GameBoard gameBoard;
+    private GameBoard gameBoard;	//게임 데이터와 연동하기 위한 객체
 
-    private ControlModel controlModel;
+    private ControlModel controlModel;	//조작 데이터와 연동하기 위한 객체
     
-    public boolean moveEnd = false;
+    public boolean moveEnd = false;	//이동이 끝났는지 확인하기위한 변수
     
-    private WeightModel selectedModel = null;
+    private WeightModel selectedModel = null;	//선택된 가중치 모델을 저장하기 위한 객체
 
     public DecisionModel(GameBoard gameBoard, ControlModel controlModel) {
 	this.gameBoard = gameBoard;
@@ -49,6 +49,7 @@ public class DecisionModel {
 	moveEnd = false;
     }
 
+    //결정 메소드
     public boolean decision(ObservableList<WeightModel> weightModel) {
 
 	moveEnd = false;
@@ -65,6 +66,7 @@ public class DecisionModel {
 	    }
 	}
 
+	//전달 된 모델이 없으면 동작하지 않는다
 	if (weightModel.size() == 0 || selectedModel == null) {
 	    weightModel.clear();
 	    moveEnd = false;
@@ -82,7 +84,7 @@ public class DecisionModel {
 	    return true;
 	}
 
-	// Board를 벗어나는 검산 오류를 수정한다.
+	// Board를 벗어나는 검산 오류를 수정한다. (오류 수정)
 	/*int j = 0;
 	while (j++ < 4) {
 	    for (int i = 0; i < 4; i++) {
@@ -97,7 +99,10 @@ public class DecisionModel {
 	    }
 	}*/
 
-	new Timer(50, new ActionListener() {
+	// NEO 가 블록 이동하는 속도를 결정한다
+	int moveDelay = 50;
+	
+	new Timer(moveDelay, new ActionListener() {
 
 	    @Override
 	    public void actionPerformed(ActionEvent e) {

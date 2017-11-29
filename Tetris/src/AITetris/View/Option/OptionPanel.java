@@ -13,6 +13,11 @@ import AITetris.Tetris;
 import AITetris.Model.Properties;
 import javafx.scene.input.KeyCode;
 
+/**
+ * 옵션 화면을 그려준다.
+ * @author Jeongsam
+ *
+ */
 public class OptionPanel extends JPanel {
 
     private Tetris tetris;
@@ -28,6 +33,7 @@ public class OptionPanel extends JPanel {
 
 	requestFocus();
 
+	//옵션 화면에서는 KeyAdapter를 단독으로 사용한다.
 	addKeyListener(new KeyAdapter() {
 	    @Override
 	    public void keyPressed(KeyEvent e) {
@@ -190,6 +196,10 @@ public class OptionPanel extends JPanel {
 	repaint();
     }
 
+    /**
+     * 현재 커서가 위치한 포인트에 따라 설명을 그려준다.
+     * @param g
+     */
     private void drawHelp(Graphics g) {
 
 	String str = "";
@@ -302,6 +312,13 @@ public class OptionPanel extends JPanel {
 
     }
 
+    /**
+     * 아름다운 볼륨바를 그려준다
+     * @param g
+     * @param x 좌표
+     * @param y 좌표
+     * @param value 값
+     */
     private void drawVolumeVar(Graphics g, int x, int y, double value) {
 
 	for (int i = 0; i < 10; i++) {
@@ -317,16 +334,11 @@ public class OptionPanel extends JPanel {
     /**
      * 문자열을 가로 기준 중앙에 그려준다.
      * 
-     * @param g
-     *            그래픽스 모델
-     * @param color
-     *            색상
-     * @param size
-     *            폰트 사이즈
-     * @param str
-     *            문자열
-     * @param height
-     *            출력 높이
+     * @param g 그래픽스 모델
+     * @param color 색상
+     * @param size 폰트 사이즈
+     * @param str 문자열
+     * @param height 출력 높이
      */
     private int drawStringCenterOfPanel(Graphics g, Color color, int size, String str, int height) {
 

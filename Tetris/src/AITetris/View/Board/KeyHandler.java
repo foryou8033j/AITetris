@@ -7,53 +7,58 @@ import AITetris.Tetris;
 import AITetris.View.Player;
 import AITetris.View.PlayerMode;
 
+/**
+ * 테르리스보드의 키 입력을 관리한다
+ * @author Jeongsam
+ *
+ */
 public class KeyHandler extends KeyAdapter {
 
     private Tetris tetris;
 
-    private GameBoard board;
-    private GameBoard board2;
+    private GameBoard leftBoard;
+    private GameBoard rightBoard;
 
     private PlayerMode playMode;
 
-    public KeyHandler(Tetris tetris, PlayerMode playMode, GameBoard gameBoard, GameBoard gameBoard2) {
+    public KeyHandler(Tetris tetris, PlayerMode playMode, GameBoard leftBoard, GameBoard rightBoard) {
 
 	this.tetris = tetris;
 
-	this.board = gameBoard;
-	this.board2 = gameBoard2;
+	this.leftBoard = leftBoard;
+	this.rightBoard = rightBoard;
 
 	this.playMode = playMode;
     }
 
     private void showTitlePanel(Player player) {
 
-	if (!board.isStarted || board.isPaused || board.isOver) {
+	if (!leftBoard.isStarted || leftBoard.isPaused || leftBoard.isOver) {
 	    tetris.initTitle();
 	}
     }
 
     private void reset(Player player) {
 	if (player.equals(Player.Player1))
-	    board.reset();
+	    leftBoard.reset();
 	if (player.equals(Player.Player2) || player.equals(Player.Neo))
-	    board2.reset();
+	    rightBoard.reset();
     }
 
     private void pause(Player player) {
 	if (player.equals(Player.Player1))
-	    board.pause();
+	    leftBoard.pause();
 	if (player.equals(Player.Player2) || player.equals(Player.Neo))
-	    board2.pause();
+	    rightBoard.pause();
     }
 
     private void rotatePeace(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    board.tryRotate();
+	    leftBoard.tryRotate();
 	}
 	if (player.equals(Player.Player2)) {
-	    board2.tryRotate();
+	    rightBoard.tryRotate();
 	}
 
     }
@@ -61,34 +66,34 @@ public class KeyHandler extends KeyAdapter {
     private void moveLeft(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    if (board.isCrazyKeyboard)
-		board.tryMove(board.curPiece, board.curX + 1, board.curY);
+	    if (leftBoard.isCrazyKeyboard)
+		leftBoard.tryMove(leftBoard.curPiece, leftBoard.curX + 1, leftBoard.curY);
 	    else
-		board.tryMove(board.curPiece, board.curX - 1, board.curY);
+		leftBoard.tryMove(leftBoard.curPiece, leftBoard.curX - 1, leftBoard.curY);
 	}
 
 	if (player.equals(Player.Player2)) {
-	    if (board2.isCrazyKeyboard)
-		board2.tryMove(board2.curPiece, board2.curX + 1, board2.curY);
+	    if (rightBoard.isCrazyKeyboard)
+		rightBoard.tryMove(rightBoard.curPiece, rightBoard.curX + 1, rightBoard.curY);
 	    else
-		board2.tryMove(board2.curPiece, board2.curX - 1, board2.curY);
+		rightBoard.tryMove(rightBoard.curPiece, rightBoard.curX - 1, rightBoard.curY);
 	}
 
     }
 
     private void moveRight(Player player) {
 	if (player.equals(Player.Player1)) {
-	    if (board.isCrazyKeyboard)
-		board.tryMove(board.curPiece, board.curX - 1, board.curY);
+	    if (leftBoard.isCrazyKeyboard)
+		leftBoard.tryMove(leftBoard.curPiece, leftBoard.curX - 1, leftBoard.curY);
 	    else
-		board.tryMove(board.curPiece, board.curX + 1, board.curY);
+		leftBoard.tryMove(leftBoard.curPiece, leftBoard.curX + 1, leftBoard.curY);
 	}
 
 	if (player.equals(Player.Player2)) {
-	    if (board2.isCrazyKeyboard)
-		board2.tryMove(board2.curPiece, board2.curX - 1, board2.curY);
+	    if (rightBoard.isCrazyKeyboard)
+		rightBoard.tryMove(rightBoard.curPiece, rightBoard.curX - 1, rightBoard.curY);
 	    else
-		board2.tryMove(board2.curPiece, board2.curX + 1, board2.curY);
+		rightBoard.tryMove(rightBoard.curPiece, rightBoard.curX + 1, rightBoard.curY);
 	}
 
     }
@@ -96,17 +101,17 @@ public class KeyHandler extends KeyAdapter {
     private void moveDown(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    if (board.isCrazyKeyboard)
-		board.dropDown();
+	    if (leftBoard.isCrazyKeyboard)
+		leftBoard.dropDown();
 	    else
-		board.tryMove(board.curPiece, board.curX, board.curY - 1);
+		leftBoard.tryMove(leftBoard.curPiece, leftBoard.curX, leftBoard.curY - 1);
 	}
 
 	if (player.equals(Player.Player2)) {
-	    if (board2.isCrazyKeyboard)
-		board2.dropDown();
+	    if (rightBoard.isCrazyKeyboard)
+		rightBoard.dropDown();
 	    else
-		board2.tryMove(board2.curPiece, board2.curX, board2.curY - 1);
+		rightBoard.tryMove(rightBoard.curPiece, rightBoard.curX, rightBoard.curY - 1);
 	}
 
     }
@@ -114,11 +119,11 @@ public class KeyHandler extends KeyAdapter {
     private void moveHardDown(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    board.dropDown();
+	    leftBoard.dropDown();
 	}
 
 	if (player.equals(Player.Player2)) {
-	    board2.dropDown();
+	    rightBoard.dropDown();
 	}
 
     }
@@ -126,10 +131,10 @@ public class KeyHandler extends KeyAdapter {
     private void exchangePeace(Player player) {
 
 	if (player.equals(Player.Player1)) {
-	    board.exchangePiece();
+	    leftBoard.exchangePiece();
 	}
 	if (player.equals(Player.Player2)) {
-	    board2.exchangePiece();
+	    rightBoard.exchangePiece();
 	}
 
     }
@@ -138,53 +143,57 @@ public class KeyHandler extends KeyAdapter {
 
 	if (playMode.equals(PlayerMode.Single)) {
 
-	    if (board.isGhost) {
-		board.isGhost = false;
+	    if (leftBoard.isGhost) {
+		leftBoard.isGhost = false;
 	    } else {
-		board.ghostUsed += 300;
-		board.isGhost = true;
+		leftBoard.ghostUsed += 300;
+		leftBoard.isGhost = true;
 	    }
 
 	    return;
-	} else if (board.isOver)
+	} else if (leftBoard.isOver)
 	    return;
 
-	if (board.isOver || board2.isOver)
+	if (leftBoard.isOver || rightBoard.isOver)
 	    return;
 
 	if (player.equals(Player.Player1)) {
-	    if (board.isGhost) {
-		board.isGhost = false;
+	    if (leftBoard.isGhost) {
+		leftBoard.isGhost = false;
 	    } else {
-		board.ghostUsed += 300;
-		board.isGhost = true;
+		leftBoard.ghostUsed += 200;
+		leftBoard.isGhost = true;
 	    }
 	}
 
 	if (player.equals(Player.Player2)) {
-	    if (board2.isGhost) {
-		board2.isGhost = false;
+	    if (rightBoard.isGhost) {
+		rightBoard.isGhost = false;
 	    } else {
-		board2.ghostUsed += 300;
-		board2.isGhost = true;
+		rightBoard.ghostUsed += 200;
+		rightBoard.isGhost = true;
 	    }
 	}
 
     }
 
+    //랭킹 등록을 시도한다
     private void rank() {
 
-	if (playMode.equals(PlayerMode.Single) && board.isOver) {
-	    board.joinRank();
+	//1인용 모드일때는 승패 여부가 없으므로 랭킹 등록을 시도한다.
+	if (playMode.equals(PlayerMode.Single) && leftBoard.isOver) {
+	    leftBoard.joinRank();
 	    return;
 	}
 
-	if (!playMode.equals(PlayerMode.Single) && (board.isOver || board2.isOver)) {
+	
+	//2인용, 인공지능 모드 일때는 승리자만 랭킹 등록이 가능하다
+	if (!playMode.equals(PlayerMode.Single) && (leftBoard.isOver || rightBoard.isOver)) {
 
-	    if (board.isWin)
-		board.joinRank();
-	    else if (!board2.player.equals(Player.Neo) && board2.isWin)
-		board2.joinRank();
+	    if (leftBoard.isWin)
+		leftBoard.joinRank();
+	    else if (!rightBoard.player.equals(Player.Neo) && rightBoard.isWin)
+		rightBoard.joinRank();
 
 	}
 
@@ -192,6 +201,7 @@ public class KeyHandler extends KeyAdapter {
 
     public void keyPressed(KeyEvent e) {
 
+	//1인용 또는 인공지능 모드일 때의 키입력을 관리한다
 	if (playMode.equals(PlayerMode.Single) || playMode.equals(PlayerMode.AI)) {
 	    switch (e.getKeyCode()) {
 
@@ -246,6 +256,7 @@ public class KeyHandler extends KeyAdapter {
 	    }
 	}
 
+	// 2인용일때의 키 입력을 관리한다
 	if (playMode.equals(PlayerMode.Duo)) {
 
 	    switch (e.getKeyCode()) {

@@ -9,10 +9,10 @@ import AITetris.View.Board.Tetrimino.Shape;
  */
 public class WeightModel {
 
-	int x;
-	int y;
-	int weight;
-	Shape rotation;
+	int x;		// X좌표 저장
+	int y;		// Y좌표 저장
+	int weight;	// 가중치 저장
+	Shape rotation;	// 회전 형태 저장
 	
 	// +a 
 
